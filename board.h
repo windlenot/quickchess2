@@ -761,86 +761,97 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 			p.second = localy - 1;
 			if (localy == 0)
 				end = true;
-			if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
-				if (movetype != 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
-			else{
-				if (TheBoard[localx][localy - 1].getplayer() != playerturn &&TheBoard[localx][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+			else{				
+				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
+					if (movetype != 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
 				}
-				end = true;
+				else{
+					if (TheBoard[localx][localy - 1].getplayer() != playerturn &&TheBoard[localx][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					}
+					end = true;
+				}
+				localy--;
 			}
-			localy--;
 		}
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){								//DOWN
 			p.second = localy + 1;
 			if (localy == 5)
 				end = true;
-			if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
 				}
-				end = true;
-			}
+				else{
+					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					}
+					end = true;
+				}
 			localy++;
+			}
 		}									//LEFT
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){
 			p.first = localx - 1;
 			if (localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
-			}
+				else{
+					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
 			localx--;
+			}
 		}					
 		localx = p1.first;
 		p.first = p1.first;
 		p.second = p1.second;	
+		end = false;
 		while (!end){								//RIGHT
 			p.first = localx + 1;
 			if (localx == 4)
 				end = true;
-			if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
 			}
-			localx++;
 		}
 		localx = p1.first;
 	}
@@ -848,6 +859,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 	localx = p1.first;
 	p.first = p1.first;
 	p.second = p1.second;
+	end = false;
 	
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 3){	//KNIGHT
 		if (localy > 1){
@@ -991,103 +1003,116 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 	localx = p1.first;
 	p.first = p1.first;
 	p.second = p1.second;
+	end = false;
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 4){	//BISHOP
 		while (!end){											//UP LEFT
 			p.second = localy - 1;
 			p.first = localx - 1;
 			if (localy == 0 || localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy--;
+				localx--;
 			}
-			localy--;
-			localx--;
 		}
 		localx = p1.first;
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){									//DOWN LEFT
 			p.second = localy + 1;
 			p.first = localx - 1;
 			if (localy == 5 || localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy++;
+				localx--;
 			}
-			localy++;
-			localx--;
 		}
 		localy = p1.second;
 		localx = p1.first;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){					//UP RIGHT
 			p.first = localx + 1;
 			p.second = localy - 1;
 			if (localx == 4|| localy == 0)
 				end = true;
-			if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
+				localy--;
 			}
-			localx++;
-			localy--;
 		}
 		localx = p1.first;
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){					//DOWN RIGHT
 			p.first = localx + 1;
 			p.second = localy + 1;
 			if (localx == 4 || localy == 5)
 				end = true;
-			if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
+				localy++;
 			}
-			localx++;
-			localy++;
 		}
+		end = false;
 	}
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 5){	//QUEEN
 		while (!end){											//UP LEFT
@@ -1095,185 +1120,208 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 			p.first = localx - 1;
 			if (localy == 0 || localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy--;
+				localx--;
 			}
-			localy--;
-			localx--;
 		}
 		localx = p1.first;
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){									//DOWN LEFT
 			p.second = localy + 1;
 			p.first = localx - 1;
 			if (localy == 5 || localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy++;
+				localx--;
 			}
-			localy++;
-			localx--;
 		}
 		localy = p1.second;
 		localx = p1.first;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){					//UP RIGHT
 			p.first = localx + 1;
 			p.second = localy - 1;
 			if (localx == 4|| localy == 0)
 				end = true;
-			if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
+				localy--;
 			}
-			localx++;
-			localy--;
 		}
 		localx = p1.first;
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){					//DOWN RIGHT
 			p.first = localx + 1;
 			p.second = localy + 1;
 			if (localx == 4 || localy == 5)
 				end = true;
-			if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
+				localy++;
 			}
-			localx++;
-			localy++;
 		}
 	localy = p1.second;
 	localx = p1.first;
 	p.first = p1.first;
 	p.second = p1.second;
+		end = false;
 		while (!end){						//UP
 			p.second = localy - 1;
 			if (localy == 0)
 				end = true;
-			if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx][localy - 1].getplayer() != playerturn && TheBoard[localx][localy - 1].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx][localy - 1].getplayer() != playerturn && TheBoard[localx][localy - 1].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy--;
 			}
-			localy--;
 		}
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){						//DOWN
 			p.second = localy + 1;
 			if (localy == 5)
 				end = true;
-			if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localy++;
 			}
-			localy++;
 		}
 		localy = p1.second;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){						//LEFT
 			p.first = localx - 1;
 			if (localx == 0)
 				end = true;
-			if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx--;
 			}
-			localx--;
 		}									//RIGHT
 		localx = p1.first;
 		p.first = p1.first;
 		p.second = p1.second;
+		end = false;
 		while (!end){
 			p.first = localx + 1;
 			if (localx == 4)
 				end = true;
-			if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
-				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
-				}
-			}
 			else{
-				if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
-					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
+					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
 					}
-				end = true;
 				}
+				else{
+					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
+						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
+							v.push_back(p);
+						}
+					end = true;
+					}
+				}
+				localx++;
 			}
-			localx++;
 		}
 		localx = p1.first;
 	}
@@ -1443,7 +1491,6 @@ bool board::ischeck(){
 					playerturn = abs(playerturn - 1);		//return to original player
 					return true;						//return true
 				}
-			//	cout << endl;
 			}
 		}
 	}
@@ -1683,25 +1730,31 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				return false;
 			}
 			move(p2, p1,a);
+			playerturn = abs(playerturn - 1);
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
+		
+		cout << "something capture the checkmaker at playerturn "<< playerturn << endl;
 										//Try to have something capture the checkmaker
 										//if seeing if black is in checkmate...
-	pair<int, int> p3;					//we're already in white's turn...
+	pair<int, int> p3;					//if we moved, we would have switched back, so stll black's turn
 	pieces temp1;
-	playerturn = abs(playerturn - 1);	//switch to black
 	p3 = checkmaker();					//see who is putting black in check
 	pair<int,int> p4;
+	cout << "after checkmaker" << endl;
 	playerturn = abs(playerturn - 1);	//switch to white
 	p4 = canbecapturedby(p3);			//as white, see which black pieces can capture p3
 	temp1 = TheBoard[p4.first][p4.second];
+	cout << "before int" << endl;
 	if (p4.first != -1){				//p3 can be captured
+		cout << "checkmaker can be captured" << endl;
 		playerturn = abs(playerturn - 1);						//as black
 		removedpiece = TheBoard[p3.first][p3.second];		//set this for the piece that'll be removed
 		move(p4,p3, a);											//make the capture, automatically switches to white
 		playerturn = abs(playerturn - 1);							//switch back to black
 		if (!ischeck()){										//the move makes them no longer in check
+			cout << "doing doing that makes the king no longer in check." << endl;
 			temp1.move(p4.first, p4.second);					//move the capturing piece back
 			removedpiece.move(p3.first,p3.second);				//move initial piece back
 			TheBoard[p3.first][p3.second] = removedpiece;	//put the captured piece back on the board
@@ -1914,9 +1967,12 @@ pair<int,int> board::canbecapturedby(pair<int, int> p2){
 	playerturn = abs(playerturn - 1);
 	pair<int, int> p1;
 	
+	cout << "in canbecapturedby" << endl;
+	
 	for (int j =0; j < 6; j++){
 		for (int i = 0; i < 5; i++){
 			if (TheBoard[i][j].getplayer() == playerturn){
+				cout << i << j << endl;
 				p1.first = i;
 				p1.second = j;
 				if (isvalid(p1, p2, 'a')){				//p2 can be captured
