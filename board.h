@@ -24,7 +24,6 @@ public:
 	~board();
 	
 	//vector<ordered_pair> checkallvalidpositions(piece p);
-	double getHeuristic();
 	void validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, char movetype);
 	void move(pair <int,int> p1, pair <int,int> & p2, char & movetype);
 	pieces getpiece(pair<int, int> d);
@@ -33,7 +32,6 @@ public:
 	void startingmove(int n);
 	int getplayer();
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
-	vector<board> expand();
 	
 	pair<int,int> canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
@@ -65,7 +63,6 @@ private:
 	
 	int playerturn;
 	int moveswithoutcapture;
-	double heuristicValue;
 	
 	knight * bn;
 	pieces bnp;
@@ -297,11 +294,6 @@ void board::startingmove(int n){
 
 int board::getplayer(){
 	return playerturn;
-}
-
-double board::getHeuristic()
-{
-    return heuristicValue; 
 }
 
 //valid move function used to be called from the main program, takes an input piece
@@ -1743,26 +1735,21 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
 		
-		cout << "something capture the checkmaker at playerturn "<< playerturn << endl;
 										//Try to have something capture the checkmaker
 										//if seeing if black is in checkmate...
 	pair<int, int> p3;					//if we moved, we would have switched back, so stll black's turn
 	pieces temp1;
 	p3 = checkmaker();					//see who is putting black in check
 	pair<int,int> p4;
-	cout << "after checkmaker" << endl;
 	playerturn = abs(playerturn - 1);	//switch to white
 	p4 = canbecapturedby(p3);			//as white, see which black pieces can capture p3
 	temp1 = TheBoard[p4.first][p4.second];
-	cout << "before int" << endl;
 	if (p4.first != -1){				//p3 can be captured
-		cout << "checkmaker can be captured" << endl;
 		playerturn = abs(playerturn - 1);						//as black
 		removedpiece = TheBoard[p3.first][p3.second];		//set this for the piece that'll be removed
 		move(p4,p3, a);											//make the capture, automatically switches to white
 		playerturn = abs(playerturn - 1);							//switch back to black
 		if (!ischeck()){										//the move makes them no longer in check
-			cout << "doing doing that makes the king no longer in check." << endl;
 			temp1.move(p4.first, p4.second);					//move the capturing piece back
 			removedpiece.move(p3.first,p3.second);				//move initial piece back
 			TheBoard[p3.first][p3.second] = removedpiece;	//put the captured piece back on the board
@@ -1975,12 +1962,9 @@ pair<int,int> board::canbecapturedby(pair<int, int> p2){
 	playerturn = abs(playerturn - 1);
 	pair<int, int> p1;
 	
-	cout << "in canbecapturedby" << endl;
-	
 	for (int j =0; j < 6; j++){
 		for (int i = 0; i < 5; i++){
 			if (TheBoard[i][j].getplayer() == playerturn){
-				cout << i << j << endl;
 				p1.first = i;
 				p1.second = j;
 				if (isvalid(p1, p2, 'a')){				//p2 can be captured
@@ -2195,37 +2179,6 @@ void board::promotepiece(pair<int, int> p1){
 	q1p.setplayer(abs(playerturn-1));		//set the queen to the current player, switched as this occurs after move function
 	q1p.move(p1.first,p1.second);			//make the piece know where it is on the board
 	TheBoard[p1.first][p1.second] = q1p;	//make the board know where the piece should be
-}
-
-//
-//Expands the board one move
-//TO DO:Make a copy constructor and replace this line with that
-//TO DO:Heuristic Function working per board
-//
-vector<board> board::expand()
-{
-    char move = 'a';
-	vector<pair <int, int> > expansion;
-	vector<board> moveListFinal;
-        pair<int,int> exp;
-	for (int j = 0; j < 6; j++){
-		for (int i = 0; i < 5; i++){
-                exp.first = i;
-                exp.second = j;
-		expansion = generatemoves(exp, move);
-		//Check for captures first
-			for(int k = 0; k < expansion.size(); k++)
-			{
-				board temp;
-				//TO DO:Make a copy constructor and include here
-				//temp.move((i, j), expansion[k], 'c');
-				//TO DO:If not updating on fly, this next line will be needed
-				//temp.updateHeuristicValue();
-				moveListFinal.push_back(temp);
-			}
-		}
-	}
-	return moveListFinal;
 }
 
 #endif
