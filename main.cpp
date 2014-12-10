@@ -1,11 +1,26 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <queue>
 #include "pieces.h"
 #include "king.h"
 #include "board.h"
 
 using namespace std;
+
+//
+//This is the custom function that compares boards 
+//in the Priority Queue based on h' value
+class Compare
+{
+public:
+    bool operator() (board x, board y)
+    {
+       return (x.getHeuristic() < y.getHeuristic());
+    }
+};
+
+
 
 int main(){
 	
@@ -20,7 +35,14 @@ int main(){
 	char movetype;
 	char a = 'a';
 	bool drawend = false;
+	bool gameOver = false;
 	
+    //Start Queue Setup
+	//Creates a Priority queue in order to customize the compare function it uses
+	priority_queue<board, std::vector<board>, Compare> PriQTy;
+	//b is the starting/default board
+    //PriQTy.push(b);
+    //End Queue Setup
 	
 	cout << "Who will move first? w/b: ";
 	cin >> c;
@@ -127,7 +149,7 @@ int main(){
  //	curplayer = 1;
 
 
-while (true){
+while (!gameOver){
 	b.display();
 	if (b.ischeck()){
 		if (curplayer == 0){
