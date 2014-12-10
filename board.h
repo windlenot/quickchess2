@@ -24,6 +24,7 @@ public:
 	~board();
 	
 	//vector<ordered_pair> checkallvalidpositions(piece p);
+        double getHeuristic();
 	void validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, char movetype);
 	void move(pair <int,int> p1, pair <int,int> & p2, char & movetype);
 	pieces getpiece(pair<int, int> d);
@@ -32,6 +33,7 @@ public:
 	void startingmove(int n);
 	int getplayer();
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
+        vector<board> expand();
 	
 	pair<int,int> canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
@@ -63,6 +65,7 @@ private:
 	
 	int playerturn;
 	int moveswithoutcapture;
+        double heuristicValue;
 	
 	knight * bn;
 	pieces bnp;
@@ -294,6 +297,11 @@ void board::startingmove(int n){
 
 int board::getplayer(){
 	return playerturn;
+}
+
+double board::getHeuristic()
+{
+    return heuristicValue; 
 }
 
 //valid move function used to be called from the main program, takes an input piece
@@ -2179,6 +2187,38 @@ void board::promotepiece(pair<int, int> p1){
 	q1p.setplayer(abs(playerturn-1));		//set the queen to the current player, switched as this occurs after move function
 	q1p.move(p1.first,p1.second);			//make the piece know where it is on the board
 	TheBoard[p1.first][p1.second] = q1p;	//make the board know where the piece should be
+}
+
+
+//
+//Expands the board one move
+//TO DO:Make a copy constructor and replace this line with that
+//TO DO:Heuristic Function working per board
+//
+vector<board> board::expand()
+{
+    char move = 'a';
+	vector<pair <int, int> > expansion;
+	vector<board> moveListFinal;
+        pair<int,int> exp;
+	for (int j = 0; j < 6; j++){
+		for (int i = 0; i < 5; i++){
+                exp.first = i;
+                exp.second = j;
+		expansion = generatemoves(exp, move);
+		//Check for captures first
+			for(int k = 0; k < expansion.size(); k++)
+			{
+				board temp;
+				//TO DO:Make a copy constructor and include here
+				//temp.move((i, j), expansion[k], 'c');
+				//TO DO:If not updating on fly, this next line will be needed
+				//temp.updateHeuristicValue();
+				moveListFinal.push_back(temp);
+			}
+		}
+	}
+	return moveListFinal;
 }
 
 #endif
