@@ -841,8 +841,6 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 
 //move pieces
 void board::move(pair<int, int> p1, pair<int, int> & p2, char & movetype){
-	char p;
-	int num1;
 	
 	pieces capturedpiece;
 	capturedpiece = TheBoard[p2.first][p2.second];
@@ -1246,8 +1244,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 			localx--;
 			}
@@ -1271,8 +1269,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 			}
@@ -1320,6 +1318,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 				}
 			}
 		}
+		p.first = p1.first;
+		p.second = p1.second;
 		if (localy < 4){					//down
 			p.second = localy + 2;
 			if (localx >0){					//left
@@ -1354,6 +1354,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 				}
 			}
 		}
+		p.first = p1.first;
+		p.second = p1.second;
 		if (localx > 1){
 			p.first = localx - 2;		//left
 			if (localy >0){					//up
@@ -1388,6 +1390,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 				}
 			}
 		}
+		p.first = p1.first;
+		p.second = p1.second;
 		if (localx < 3){					//right
 			p.first = localx + 2;
 			if (localy >0){					//up
@@ -1445,8 +1449,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy--;
 				localx--;
@@ -1473,8 +1477,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy++;
 				localx--;
@@ -1501,8 +1505,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 				localy--;
@@ -1529,8 +1533,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 				localy++;
@@ -1551,12 +1555,13 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 					}
 				}
 				else{
+					cout << playerturn << endl;
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy--;
 				localx--;
@@ -1583,8 +1588,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy++;
 				localx--;
@@ -1611,8 +1616,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 				localy--;
@@ -1639,8 +1644,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 				localy++;
@@ -1666,8 +1671,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy--;
 			}
@@ -1691,8 +1696,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localy++;
 			}
@@ -1716,8 +1721,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx--;
 			}
@@ -1741,8 +1746,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
-					end = true;
 					}
+					end = true;
 				}
 				localx++;
 			}
@@ -1911,7 +1916,7 @@ bool board::ischeck(){
 				p1.first = i;
 				p1.second = j;
 				if (isvalid(p1, p2, 'c')){			//see if the capture is possible
-					cout << endl << endl << p.getpiecetypeint() << endl << endl;
+					cout << endl << p.getpiecetypeint() << endl;
 					playerturn = abs(playerturn - 1);		//return to original player
 					return true;						//return true
 				}
@@ -2167,7 +2172,8 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 	pair<int,int> p4;
 	playerturn = abs(playerturn - 1);	//switch to white
 	p4 = canbecapturedby(p3);			//as white, see which black pieces can capture p3
-	temp1 = TheBoard[p4.first][p4.second];
+	if (p4.first != -1)
+		temp1 = TheBoard[p4.first][p4.second];
 	if (p4.first != -1){				//p3 can be captured
 		playerturn = abs(playerturn - 1);						//as black
 		removedpiece = TheBoard[p3.first][p3.second];		//set this for the piece that'll be removed
@@ -2204,12 +2210,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 	p2.first = localx;
 	p2.second = localy;
 	
-	
 	int xdistance;
 	int ydistance;
 	pair<int, int> temppos;						//black's move
 	p3 = checkmaker();
-	
 	if (p2.first == p3.first){			//checkmaker is on the same x as king
 		ydistance = abs(p2.second - p3.second);
 		if (ydistance>1){		//and they're more than one space apart
@@ -2220,7 +2224,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localy = p3.second;
 				
 			localy++;
-			while (ydistance >=1){
+			while (ydistance >1){
 				temppos.second = localy;
 				playerturn = abs(playerturn-1);			//to white's
 				p4 = canbecapturedby(temppos);
@@ -2257,7 +2261,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localx = p3.second;
 				
 			localx++;
-			while (xdistance >=1){
+			while (xdistance >1){
 				temppos.first = localx;
 				playerturn = abs(playerturn-1);			//to white's
 				p4 = canbecapturedby(temppos);
