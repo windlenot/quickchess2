@@ -275,25 +275,45 @@ board::board(){
 board::board(const board& other)
 {
     bn = new knight;
-    wn = new knight;  	
+    bn->setplayer(1);
+    wn = new knight; 
+    wn->setplayer(0);    
     bb = new bishop;
+    bb->setplayer(1);
     wb = new bishop;
+    wb->setplayer(0);
     br = new rook;
+    br->setplayer(1);
     wr = new rook;
+    wr->setplayer(0);
     bk = new king;
+    bk->setplayer(1);
     wk = new king;
+    wk->setplayer(0);
     bq = new queen;
+    bq->setplayer(1);
     wq = new queen;
+    wq->setplayer(0);
     bp1 = new pawn;
     bp2 = new pawn;
     bp3 = new pawn;
     bp4 = new pawn;
     bp5 = new pawn;
+    bp1->setplayer(1);
+    bp2->setplayer(1);
+    bp3->setplayer(1);
+    bp4->setplayer(1);
+    bp5->setplayer(1);
     wp1 = new pawn;
     wp2 = new pawn;
     wp3 = new pawn;
     wp4 = new pawn;
     wp5 = new pawn;
+    wp1->setplayer(0);
+    wp2->setplayer(0);
+    wp3->setplayer(0);
+    wp4->setplayer(0);
+    wp5->setplayer(0);
     emp = new empty;
 	
     TheBoard.resize(5);
@@ -543,7 +563,7 @@ board::board(const board& other)
         {   
             TheBoard[bp5->getx()][bp5->gety()] = bp5p;
         }
-        
+    //Empty Piece    
     emp->setplayer(2);
     empp.set(emp);
 
