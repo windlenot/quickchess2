@@ -41,7 +41,7 @@ int main(){
 	//Creates a Priority queue in order to customize the compare function it uses
 	priority_queue<board, std::vector<board>, Compare> PriQTy;
 	//b is the starting/default board
-    //PriQTy.push(b);
+    PriQTy.push(b);
     //End Queue Setup
 	
 	cout << "Who will move first? w/b: ";
