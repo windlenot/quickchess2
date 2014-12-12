@@ -62,10 +62,10 @@ int main(){
 	}
 		
 
-//	first.first = 2;
-//	first.second = 4;
+//	first.first = 3;
+//	first.second = 5;
 //	second.first = 2;
-//	second.second = 3;
+//	second.second = 4;
 //	b.move(first,second,a);
 
 //	first.first = 2;
@@ -146,7 +146,7 @@ int main(){
 //	second.second = 4;
 //	b.move(first,second,a);
 	
- //	curplayer = 1;
+// 	curplayer = 1;
 
 
 while (!gameOver){
