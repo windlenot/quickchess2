@@ -36,6 +36,7 @@ int main(){
 	char a = 'a';
 	bool drawend = false;
 	bool gameOver = false;
+	bool stalemate = false;
 	
     //Start Queue Setup
 	//Creates a Priority queue in order to customize the compare function it uses
@@ -156,7 +157,7 @@ while (!gameOver){
 			cout << "White is in check." << endl;
 			if (b.ischeckmate()){
 				cout << "White is in checkmate. Black wins." << endl;
-				break;
+				gameOver = true;
 				//x = 20;
 			}
 		}
@@ -164,7 +165,7 @@ while (!gameOver){
 			cout << "Black is in check." << endl;
 			if (b.ischeckmate()){
 				cout << "Black is in checkmate. White wins." << endl;
-				break;
+				gameOver = true;
 				//x = 20;
 			}
 		}
@@ -173,107 +174,156 @@ while (!gameOver){
 	if (b.isstalemate()){
 		if (curplayer == 0){
 			cout << "White is stalemated." << endl;
-			break;
+			gameOver = true;
 			drawend = true;
 		}
 		else{
 			cout << "Black is stalemated." << endl;
-			break;
+			gameOver = true;
 			drawend = true;
 		}
 	}
 	
 	if (b.isdraw()){
 		cout << "There has been 20 moves without a capture, rescue, or promotion. It's a draw." << endl;
-		break;
+		gameOver = true;
 		drawend = true;
 	}
 		
-	
-	if (curplayer == 0)
-		cout << "White's turn:" <<endl;
-	else
-		cout << "Black's Turn:"<<endl;
+	if (!gameOver){
+		if (curplayer == 0)
+			cout << "White's turn:" <<endl;
+		else
+			cout << "Black's Turn:"<<endl;
+			
+		cout << "First piece type (K/Q/R/N/B/P): ";
+		cin >> inputpiecetype;
+		cout << "	first X: ";
+		cin >> p;
 		
-	cout << "First piece type (K/Q/R/N/B/P): ";
-	cin >> inputpiecetype;
-	cout << "	first X: ";
-	cin >> p;
-	
-	if (p == 'A'|| p == 'a')
-		first.first = 0;
-	else if (p == 'B'|| p == 'b')
-		first.first = 1;
-	else if (p == 'C'|| p == 'c')
-		first.first = 2;
-	else if (p == 'D'|| p == 'd')
-		first.first = 3;
-	else if (p == 'E'|| p == 'e')
-		first.first = 4;
-	else
-		first.first = -1;
-	
-	cout << "	first Y: ";
-	cin >> 	num1;
-	
-	if (num1 == 1)
-		first.second = 5;
-	else if (num1 == 2)
-		first.second = 4;
-	else if (num1 == 3)
-		first.second = 3;
-	else if (num1 == 4)
-		first.second = 2;
-	else if (num1 == 5)
-		first.second = 1;
-	else if (num1 == 6)
-		first.second = 0;
-	else
-		first.second = -1;
+		if (p == 'A'|| p == 'a')
+			first.first = 0;
+		else if (p == 'B'|| p == 'b')
+			first.first = 1;
+		else if (p == 'C'|| p == 'c')
+			first.first = 2;
+		else if (p == 'D'|| p == 'd')
+			first.first = 3;
+		else if (p == 'E'|| p == 'e')
+			first.first = 4;
+		else
+			first.first = -1;
 		
+		cout << "	first Y: ";
+		cin >> 	num1;
 		
-	cout << "	second X: ";
-	cin >> p;
+		if (num1 == 1)
+			first.second = 5;
+		else if (num1 == 2)
+			first.second = 4;
+		else if (num1 == 3)
+			first.second = 3;
+		else if (num1 == 4)
+			first.second = 2;
+		else if (num1 == 5)
+			first.second = 1;
+		else if (num1 == 6)
+			first.second = 0;
+		else
+			first.second = -1;
+			
+			
+		cout << "	second X: ";
+		cin >> p;
 
-	if (p == 'A'|| p == 'a')
-		second.first = 0;
-	else if (p == 'B'|| p == 'b')
-		second.first = 1;
-	else if (p == 'C'|| p == 'c')
-		second.first = 2;
-	else if (p == 'D'|| p == 'd')
-		second.first = 3;
-	else if (p == 'E'|| p == 'e')
-		second.first = 4;
-	else
-		second.first = -1;
+		if (p == 'A'|| p == 'a')
+			second.first = 0;
+		else if (p == 'B'|| p == 'b')
+			second.first = 1;
+		else if (p == 'C'|| p == 'c')
+			second.first = 2;
+		else if (p == 'D'|| p == 'd')
+			second.first = 3;
+		else if (p == 'E'|| p == 'e')
+			second.first = 4;
+		else
+			second.first = -1;
 
-	cout << "	second Y: ";
-	cin >> 	num1;
-	
-	if (num1 == 1)
-		second.second = 5;
-	else if (num1 == 2)
-		second.second = 4;
-	else if (num1 == 3)
-		second.second = 3;
-	else if (num1 == 4)
-		second.second = 2;
-	else if (num1 == 5)
-		second.second = 1;
-	else if (num1 == 6)
-		second.second = 0;
-	else
-		second.second = -1;
+		cout << "	second Y: ";
+		cin >> 	num1;
 		
-	cout << "Enter the move type (m/c/r/p): ";
-	cin >> movetype;
-	
-	b.validatemove(inputpiecetype, first, second, movetype);
-	
-	curplayer = abs(curplayer - 1);
+		if (num1 == 1)
+			second.second = 5;
+		else if (num1 == 2)
+			second.second = 4;
+		else if (num1 == 3)
+			second.second = 3;
+		else if (num1 == 4)
+			second.second = 2;
+		else if (num1 == 5)
+			second.second = 1;
+		else if (num1 == 6)
+			second.second = 0;
+		else
+			second.second = -1;
+			
+		cout << "Enter the move type (m/c/r/p): ";
+		cin >> movetype;
+		
+		b.validatemove(inputpiecetype, first, second, movetype);
+		
+		curplayer = abs(curplayer - 1);
+		}
+	}
 
-}
+	if (drawend){
+		int whitepoints = 0;
+		int blackpoints = 0;
+		pair<int, int> p;
+		pieces curpiece;
+		if (stalemate){
+			if (curplayer == 0)
+				blackpoints = 14;
+			else
+				whitepoints = 14;
+		}
+		
+		for (int i = 0; i < 5; i++){
+			for (int j = 0; j < 6; j++){
+				p.first = i;
+				p.second = j;
+				curpiece = b.getpiece(p);
+				if (curpiece.getpiecetypeint() != 0){
+					if (curpiece.getplayer() == 0){
+						if (curpiece.getpiecetypeint() == 1)
+							whitepoints = whitepoints + 1;
+						else if(curpiece.getpiecetypeint() == 2)
+							whitepoints = whitepoints + 5;
+						else if(curpiece.getpiecetypeint() == 3 || curpiece.getpiecetypeint() == 4)
+							whitepoints = whitepoints + 3;
+						else if(curpiece.getpiecetypeint() == 5)
+							whitepoints = whitepoints + 9;
+					}
+					else{
+						if (curpiece.getpiecetypeint() == 1)
+							blackpoints = blackpoints + 1;
+						else if(curpiece.getpiecetypeint() == 2)
+							blackpoints = blackpoints + 5;
+						else if(curpiece.getpiecetypeint() == 3 || curpiece.getpiecetypeint() == 4)
+							blackpoints = blackpoints + 3;
+						else if(curpiece.getpiecetypeint() == 5)
+							blackpoints = blackpoints + 9;
+					}
+				}
+			}
+		}
+		
+	if (whitepoints > blackpoints)
+		cout << "White wins with " << whitepoints << " points. Black has " << blackpoints << " points." << endl;
+	else
+		cout << "Black wins with " << blackpoints << " points. White has " << whitepoints << " points." << endl;
+
+	}
 
 	return 0;
 }

@@ -28,7 +28,7 @@ public:
         double getHeuristic();
 	void validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, char movetype);
 	void move(pair <int,int> p1, pair <int,int> & p2, char & movetype);
-	pieces getpiece(pair<int, int> d);
+	pieces getpiece (pair<int, int> d) const;
         vector<pieces> getEnemiesCaptured() const;
         vector<pieces> getPiecesLost() const;
         int getMovesWithoutCapture() const;
@@ -70,7 +70,7 @@ private:
 	
 	int playerturn;
 	int moveswithoutcapture;
-        double heuristicValue;
+	double heuristicValue;
 	
 	knight * bn;
 	pieces bnp;
@@ -274,283 +274,170 @@ board::board(){
 //
 board::board(const board& other)
 {
-    bn = new knight;
-    wn = new knight;  	
-    bb = new bishop;
-    wb = new bishop;
-    br = new rook;
-    wr = new rook;
-    bk = new king;
-    wk = new king;
-    bq = new queen;
-    wq = new queen;
-    bp1 = new pawn;
-    bp2 = new pawn;
-    bp3 = new pawn;
-    bp4 = new pawn;
-    bp5 = new pawn;
-    wp1 = new pawn;
-    wp2 = new pawn;
-    wp3 = new pawn;
-    wp4 = new pawn;
-    wp5 = new pawn;
-    emp = new empty;
-	
     TheBoard.resize(5);
     for(int i = 0; i < 5; i++)
 	TheBoard[i].resize(6);
     
     moveswithoutcapture = other.getMovesWithoutCapture();    
 
-	//White Pieces
-        wn->setx(other.getPieceFromAnywhere("wn").first);
-        wn->sety(other.getPieceFromAnywhere("wn").second);
-	wnp.set(wn);
-        if(wn->getx() == -1 && wn->gety() == -1)
-        {
-            pieceslost.push_back(wn);
-        }
-        else
-        {
-            TheBoard[wn->getx()][wn->gety()] = wnp;	
-        }
-        
-        wk->setx(other.getPieceFromAnywhere("wk").first);
-        wk->sety(other.getPieceFromAnywhere("wk").second);
-	wkp.set(wk);
-        if(wk->getx() == -1 && wk->gety() == -1)
-        {
-            pieceslost.push_back(wk);
-        }
-        else
-        {        
-            TheBoard[wk->getx()][wk->gety()] = wkp;
-        }
-
-        wq->setx(other.getPieceFromAnywhere("wq").first);
-        wq->sety(other.getPieceFromAnywhere("wq").second);
-	wqp.set(wq);
-        if(wq->getx() == -1 && wq->gety() == -1)
-        {
-            pieceslost.push_back(wq);
-        }
-        else
-        {            
-            TheBoard[wq->getx()][wq->gety()] = wqp;
-        }
-
-        wb->setx(other.getPieceFromAnywhere("wb").first);
-        wb->sety(other.getPieceFromAnywhere("wb").second);
-	wbp.set(wb);
-        if(wb->getx() == -1 && wb->gety() == -1)
-        {
-            pieceslost.push_back(wb);
-        }
-        else
-        {            
-            TheBoard[wb->getx()][wb->gety()] = wbp;
-        }
-
-        wr->setx(other.getPieceFromAnywhere("wr").first);
-        wr->sety(other.getPieceFromAnywhere("wr").second);
-	wrp.set(wr);
-        if(wr->getx() == -1 && wr->gety() == -1)
-        {
-            pieceslost.push_back(wr);
-        }
-        else
-        {            
-            TheBoard[wr->getx()][wr->gety()] = wrp;
-        }
-
-        wp1->setx(other.getPieceFromAnywhere("wp1").first);
-        wp1->sety(other.getPieceFromAnywhere("wp1").second);
-	wp1p.set(wp1);
-        if(wp1->getx() == -1 && wp1->gety() == -1)
-        {
-            pieceslost.push_back(wp1);
-        }
-        else
-        {            
-            TheBoard[wp1->getx()][wp1->gety()] = wp1p;
-        }
-
-        wp2->setx(other.getPieceFromAnywhere("wp2").first);
-        wp2->sety(other.getPieceFromAnywhere("wp2").second);
-	wp2p.set(wp2);
-        if(wp2->getx() == -1 && wp2->gety() == -1)
-        {
-            pieceslost.push_back(wp2);
-        }
-        else
-        {         
-            TheBoard[wp2->getx()][wp2->gety()] = wp2p;
-        }
-
-        wp3->setx(other.getPieceFromAnywhere("wp3").first);
-        wp3->sety(other.getPieceFromAnywhere("wp3").second);
-	wp3p.set(wp3);
-        if(wp3->getx() == -1 && wp3->gety() == -1)
-        {
-            pieceslost.push_back(wp3);
-        }
-        else
-        { 
-            TheBoard[wp3->getx()][wp3->gety()] = wp3p;
-        }
-
-        wp4->setx(other.getPieceFromAnywhere("wp4").first);
-        wp4->sety(other.getPieceFromAnywhere("wp4").second);    
-	wp4p.set(wp4);
-        if(wp4->getx() == -1 && wp4->gety() == -1)
-        {
-            pieceslost.push_back(wp4);
-        }
-        else
-        {         
-            TheBoard[wp4->getx()][wp4->gety()] = wp4p;
-        }
-
-        wp5->setx(other.getPieceFromAnywhere("wp5").first);
-        wp5->sety(other.getPieceFromAnywhere("wp5").second); 
-	wp5p.set(wp5);
-        if(wp5->getx() == -1 && wp5->gety() == -1)
-        {
-            pieceslost.push_back(wp5);
-        }
-        else
-        {         
-            TheBoard[wp5->getx()][wp5->gety()] = wp5p;
+	pieces addpiece;
+	pieces curpiece;
+	empty * emptypiece = new empty;
+	emptypiece->setplayer(2);
+	pieces emptypiece2;
+	emptypiece2.set(emptypiece);
+	pair <int, int> p;
+	
+	for (int i = 0; i < 5; i++){
+		for (int j = 0; j < 6; j++){
+			p.first = i;
+			p.second = j;
+			curpiece = other.getpiece(p);
+			if (curpiece.getpiecetypeint() == 0){
+				TheBoard[i][j] = emptypiece2;
+			}
+			else if (curpiece.getpiecetypeint() == 1){
+				pawn * pawn1 = new pawn;
+				pawn1->setx(curpiece.getx());
+				pawn1->sety(curpiece.gety());
+				pawn1->setplayer(curpiece.getplayer());
+				addpiece.set(pawn1);
+				TheBoard[i][j] = addpiece;
+			}
+			else if (curpiece.getpiecetypeint() == 2){
+				rook * rook1 = new rook;
+				rook1->setx(curpiece.getx());
+				rook1->sety(curpiece.gety());
+				rook1->setplayer(curpiece.getplayer());
+				addpiece.set(rook1);
+				TheBoard[i][j] = addpiece;
+			}
+			else if (curpiece.getpiecetypeint() == 3){
+				knight * knight1 = new knight;
+				knight1->setx(curpiece.getx());
+				knight1->sety(curpiece.gety());
+				knight1->setplayer(curpiece.getplayer());
+				addpiece.set(knight1);
+				TheBoard[i][j] = addpiece;
+			}
+			else if (curpiece.getpiecetypeint() == 4){
+				bishop * bishop1 = new bishop;
+				bishop1->setx(curpiece.getx());
+				bishop1->sety(curpiece.gety());
+				bishop1->setplayer(curpiece.getplayer());
+				addpiece.set(bishop1);
+				TheBoard[i][j] = addpiece;
+			}
+			else if (curpiece.getpiecetypeint() == 5){
+				queen * queen1 = new queen;
+				queen1->setx(curpiece.getx());
+				queen1->sety(curpiece.gety());
+				queen1->setplayer(curpiece.getplayer());
+				addpiece.set(queen1);
+				TheBoard[i][j] = addpiece;
+			}
+			else if (curpiece.getpiecetypeint() == 6){
+				king * king1 = new king;
+				king1->setx(curpiece.getx());
+				king1->sety(curpiece.gety());
+				king1->setplayer(curpiece.getplayer());
+				addpiece.set(king1);
+				TheBoard[i][j] = addpiece;
+			}
+		}
 	}
-        
-        //Black Pieces
-        bn->setx(other.getPieceFromAnywhere("bn").first);
-        bn->sety(other.getPieceFromAnywhere("bn").second);     
-	bnp.set(bn);
-        if(bn->getx() == -1 && bn->gety() == -1)
-        {
-            enemiescaptured.push_back(bn);
-        }
-        else
-        {         
-            TheBoard[bn->getx()][bn->gety()] = bnp;
-        }
-        
-        bk->setx(other.getPieceFromAnywhere("bk").first);
-        bk->sety(other.getPieceFromAnywhere("bk").second);
-	bkp.set(bk);
-        if(bk->getx() == -1 && bk->gety() == -1)
-        {
-            enemiescaptured.push_back(bk);
-        }
-        else
-        {          
-            TheBoard[bk->getx()][bk->gety()] = bkp;
-        }
-        
-        bq->setx(other.getPieceFromAnywhere("bq").first);
-        bq->sety(other.getPieceFromAnywhere("bq").second);
-	bqp.set(bq);
-        if(bq->getx() == -1 && bq->gety() == -1)
-        {
-            enemiescaptured.push_back(bq);
-        }
-        else
-        {  
-            TheBoard[bq->getx()][bq->gety()] = bqp;
-        }
-        
-        bb->setx(other.getPieceFromAnywhere("bb").first);
-        bb->sety(other.getPieceFromAnywhere("bb").second);
-	bbp.set(bb);
-        if(bb->getx() == -1 && bb->gety() == -1)
-        {
-            enemiescaptured.push_back(bb);
-        }
-        else
-        {          
-            TheBoard[bb->getx()][bb->gety()] = bbp;
-        }
-        
-        br->setx(other.getPieceFromAnywhere("br").first);
-        br->sety(other.getPieceFromAnywhere("br").second);
-	brp.set(br);
-        if(br->getx() == -1 && br->gety() == -1)
-        {
-            enemiescaptured.push_back(br);
-        }
-        else
-        {          
-            TheBoard[br->getx()][br->gety()] = brp;
-        }
-        
-        bp1->setx(other.getPieceFromAnywhere("bp1").first);
-        bp1->sety(other.getPieceFromAnywhere("bp1").second);
-	bp1p.set(bp1);
-        if(bp1->getx() == -1 && bp1->gety() == -1)
-        {
-            enemiescaptured.push_back(bp1);
-        }
-        else
-        {          
-            TheBoard[bp1->getx()][bp1->gety()] = bp1p;
-        }
-        
-        bp2->setx(other.getPieceFromAnywhere("bp2").first);
-        bp2->sety(other.getPieceFromAnywhere("bp2").second);
-	bp2p.set(bp2);
-        if(bp2->getx() == -1 && bp2->gety() == -1)
-        {
-            enemiescaptured.push_back(bp2);
-        }
-        else
-        {   
-            TheBoard[bp2->getx()][bp2->gety()] = bp2p;
-        }
-        
-        bp3->setx(other.getPieceFromAnywhere("bp3").first);
-        bp3->sety(other.getPieceFromAnywhere("bp3").second);
-	bp3p.set(bp3);
-        if(bp3->getx() == -1 && bp3->gety() == -1)
-        {
-            enemiescaptured.push_back(bp3);
-        }
-        else
-        {   
-            TheBoard[bp3->getx()][bp3->gety()] = bp3p;
-        }
-        
-        bp4->setx(other.getPieceFromAnywhere("bp4").first);
-        bp4->sety(other.getPieceFromAnywhere("bp4").second);
-	bp4p.set(bp4);
-        if(bp4->getx() == -1 && bp4->gety() == -1)
-        {
-            enemiescaptured.push_back(bp4);
-        }
-        else
-        {   
-            TheBoard[bp4->getx()][bp4->gety()] = bp4p;
-        }
-        
-        bp5->setx(other.getPieceFromAnywhere("bp5").first);
-        bp5->sety(other.getPieceFromAnywhere("bp5").second);
-	bp5p.set(bp5);
-        if(bp5->getx() == -1 && bp5->gety() == -1)
-        {
-            enemiescaptured.push_back(bp5);
-        }
-        else
-        {   
-            TheBoard[bp5->getx()][bp5->gety()] = bp5p;
-        }
-        
-    emp->setplayer(2);
-    empp.set(emp);
-
-    for (int i = 0; i < 5; i++)
-	for (int j = 2; j < 4; j++)
-            TheBoard[i][j] = empp;
-
+	
+	vector<pieces> v;
+	
+	v = other.getEnemiesCaptured();
+	for (int i = 0; i < v.size(); i++){				//move enemies captured vector
+		curpiece = v[i];
+		if (curpiece.getpiecetypeint() == 1){
+			pawn * pawn1 = new pawn;
+			pawn1->setx(curpiece.getx());
+			pawn1->sety(curpiece.gety());
+			pawn1->setplayer(curpiece.getplayer());
+			addpiece.set(pawn1);
+			enemiescaptured.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 2){
+			rook * rook1 = new rook;
+			rook1->setx(curpiece.getx());
+			rook1->sety(curpiece.gety());
+			rook1->setplayer(curpiece.getplayer());
+			addpiece.set(rook1);
+			enemiescaptured.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 3){
+			knight * knight1 = new knight;
+			knight1->setx(curpiece.getx());
+			knight1->sety(curpiece.gety());
+			knight1->setplayer(curpiece.getplayer());
+			addpiece.set(knight1);
+			enemiescaptured.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 4){
+			bishop * bishop1 = new bishop;
+			bishop1->setx(curpiece.getx());
+			bishop1->sety(curpiece.gety());
+			bishop1->setplayer(curpiece.getplayer());
+			addpiece.set(bishop1);
+			enemiescaptured.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 5){
+			queen * queen1 = new queen;
+			queen1->setx(curpiece.getx());
+			queen1->sety(curpiece.gety());
+			queen1->setplayer(curpiece.getplayer());
+			addpiece.set(queen1);
+			enemiescaptured.push_back(addpiece);
+		}
+	}
+	
+	v = other.getPiecesLost();
+	for (int i = 0; i < v.size(); i++){			//Move the pieces lost vector
+		curpiece = v[i];
+		if (curpiece.getpiecetypeint() == 1){
+			pawn * pawn1 = new pawn;
+			pawn1->setx(curpiece.getx());
+			pawn1->sety(curpiece.gety());
+			pawn1->setplayer(curpiece.getplayer());
+			addpiece.set(pawn1);
+			pieceslost.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 2){
+			rook * rook1 = new rook;
+			rook1->setx(curpiece.getx());
+			rook1->sety(curpiece.gety());
+			rook1->setplayer(curpiece.getplayer());
+			addpiece.set(rook1);
+			pieceslost.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 3){
+			knight * knight1 = new knight;
+			knight1->setx(curpiece.getx());
+			knight1->sety(curpiece.gety());
+			knight1->setplayer(curpiece.getplayer());
+			addpiece.set(knight1);
+			pieceslost.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 4){
+			bishop * bishop1 = new bishop;
+			bishop1->setx(curpiece.getx());
+			bishop1->sety(curpiece.gety());
+			bishop1->setplayer(curpiece.getplayer());
+			addpiece.set(bishop1);
+			pieceslost.push_back(addpiece);
+		}
+		else if (curpiece.getpiecetypeint() == 5){
+			queen * queen1 = new queen;
+			queen1->setx(curpiece.getx());
+			queen1->sety(curpiece.gety());
+			queen1->setplayer(curpiece.getplayer());
+			addpiece.set(queen1);
+			pieceslost.push_back(addpiece);
+		}
+	}
 }
 
 //destructor
@@ -827,6 +714,8 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 	}
 	
 	move(p1,p2,movetype);
+	if (movetype == 'c' || movetype == 'C')
+		moveswithoutcapture = 0;
 	if (movetype == 'r' || movetype == 'R'){
 		rescuepiece(p2,capturedp);
 		moveswithoutcapture = 0;
@@ -912,7 +801,7 @@ bool board::isempty(pair<int, int> d){
 }
 
 //Given a position, return the piece
-pieces board::getpiece(pair <int, int> d){
+pieces board::getpiece(pair <int, int> d) const{
 	return TheBoard[d.first][d.second];
 }
 
@@ -1284,24 +1173,23 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 	end = false;
 	
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 3){	//KNIGHT
-		if (localy > 1){
-			p.second = localy - 2;		//up
-			if (localx >0){					//left
-				p.first = localx - 1;
-				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
+		if (localy > 1){				//checking up left/right
+			p.second = localy - 2;		//we can move up, change the y coord
+			if (localx >0){					//checking LEFT, we can move left
+				p.first = localx - 1;			//change the x one to the left
+				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){		//The spot is free
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						v.push_back(p);				//so push it on the list
 					}
 				}
-				else{
-					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
+				else{				//position is not empty
+					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){ //and it's not friendly
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
 						}
 					}
 				}
 			}
-			p.first = p1.first;
 			if (localx <4){
 				p.first = localx + 1;		//right
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
@@ -1337,7 +1225,6 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 					}
 				}
 			}
-			p.first = p1.first;
 			if (localx <4){
 				p.first = localx + 1;		//right
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
@@ -1373,7 +1260,6 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 					}
 				}
 			}
-			p.first = p1.first;
 			if (localy <5){
 				p.second = localy + 1;		//down
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
@@ -1555,7 +1441,6 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 					}
 				}
 				else{
-					cout << playerturn << endl;
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							v.push_back(p);
@@ -1877,8 +1762,9 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 //True if it is, false if not
 bool board::isinvector(vector<pair <int, int> > v,pair <int,int> p1){
 	for (int i = 0; i < v.size(); i++){
-		//cout << "(" << v[i].first << " , " << v[i].second << ")";
+		cout << "(" << v[i].first << " , " << v[i].second << ")";
 	}
+	cout << endl;
 	for (int i = 0; i < v.size(); i++){
 		if (v[i] == p1)
 			return true;
@@ -2476,27 +2362,39 @@ void board::rescuepiece(pair<int, int> p1, char c){
 	int nextpos = 1;
 	bool removed;
 	
-	if (playerturn == 1){			//because this happens after the move function, the playerturn has already change
+	if (playerturn == 1){			//because this happens after the move function, the playerturn has already changed
 		if (c == 'r' || c == 'R'){		//figure out what piece will be captured at set tempp as that piece
-			tempp = wrp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 2){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 2;
 		}
 		else if (c == 'n' || c == 'N'){
-			tempp = wnp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 3){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 3;
 		}
 		else if (c == 'b' || c == 'B'){
-			tempp = wbp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 4){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 4;
 		}
 		else if (c == 'q' || c == 'Q'){
-			for (int i = 0; i < pieceslost.size(); i++){		//different because there might be multiple queens
+			for (int i = 0; i < pieceslost.size(); i++){
 				if (pieceslost[i].getpiecetypeint() == 5){
 					tempp = pieceslost[i];
 				}
