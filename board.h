@@ -23,7 +23,7 @@ public:
 	board();
         board(const board& other);
 	~board();
-	
+
 	//vector<ordered_pair> checkallvalidpositions(piece p);
         double getHeuristic();
 	void validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, char movetype);
@@ -39,39 +39,39 @@ public:
 	int getplayer() const;
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
         vector<board> expand();
-	
+
 	pair<int,int> canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
-	
+
 	vector<pair <int, int> > generatemoves(pair <int,int> p1, char movetype);
 	bool isinvector(vector<pair <int, int> > v,pair <int,int> p1);
-	
+
 	void testmove(pair<int, int> p1, pair<int, int> p2);
-	
+
 	bool isstalemate();
 	bool isdraw();
 	bool iscapturedpiece(char capturedp);
-	
+
 	void rescuepiece(pair<int, int> p1, char c);
 	void promotepiece(pair<int, int> p1);
-	
+
 	//for solve class
 	bool ischeckmate();
 	bool ispromotion(pair<int, int> p1);
 	bool ischeck();
 	bool isrescue();
 	//...
-	
+
 private:
 	vector<pieces> enemiescaptured;	//List of enemies captured
 	vector<pieces> pieceslost;		//List of pieces lost
-	
+
 	vector< vector < pieces> > TheBoard;	//2d vector of pieces
-	
+
 	int playerturn;
 	int moveswithoutcapture;
 	double heuristicValue;
-	
+
 	knight * bn;
 	pieces bnp;
 	knight * wn;
@@ -114,11 +114,44 @@ private:
 	pieces wp5p;
 	empty * emp;
 	pieces empp;
-	
+
 	bool iswhitecheckmate();
-	
-	bool iswhiteincheck(); 
-	
+
+	bool iswhiteincheck();
+
+
+    /*
+    /
+    / nK, nQ, nR, nB, nP      = Number of kings, queens, rooks, bishops, knights and pawns
+    / nK_, nQ_, nR_, nB_, nP_ = opponent number of kings, queens...
+    / doubled, blocked and isolated pawns
+    /   - doubled  = two pawns of the same color residing on the same column
+    /   - blocked  = pawn with your next title blocked by an enemy piece
+    /   - isolated = pawns with no adjacent friendly pawns
+    / mobility = total number of legal moves
+    /
+    */
+	map<string,int> numberOfPieces;
+	numberOfPieces["nK"]  = 1; //Pieces from current player
+    numberOfPieces["nK_"] = 1; //Pieces with "_" are from the opponent player
+    numberOfPieces["nQ"]  = 1;
+    numberOfPieces["nQ_"] = 1;
+    numberOfPieces["nR"]  = 1;
+    numberOfPieces["nR_"] = 1;
+    numberOfPieces["nB"]  = 1;
+    numberOfPieces["nB_"] = 1;
+    numberOfPieces["nP"]  = 5;
+    numberOfPieces["nP_"] = 5;
+    numberOfPieces["doubled"]  = 0;
+    numberOfPieces["doubled_"] = 0;
+    numberOfPieces["blocked"]  = 0;
+    numberOfPieces["blocked_"] = 0;
+    numberOfPieces["isolated"]  = 0;
+    numberOfPieces["isolated_"] = 0;
+    numberOfPieces["mobility"]  = 6;
+    numberOfPieces["mobility_"] = 6;
+
+
 	//...
 };
 
@@ -144,17 +177,17 @@ board::board(){
 	wp4 = new pawn;
 	wp5 = new pawn;
 	emp = new empty;
-	
-	
+
+
 	enemiescaptured.resize(0);
 	pieceslost.resize(0);
-	
+
 	moveswithoutcapture = 0;
-	
+
 	TheBoard.resize(5);
 	for(int i = 0; i < 5; i++)
 		TheBoard[i].resize(6);
-	
+
 	//All white pieces...
 	wn->setplayer(0);		//Set to first player
 	wn->setx(4);				//Set x position
@@ -206,7 +239,7 @@ board::board(){
 	wp5->sety(4);
 	wp5p.set(wp5);
 	TheBoard[4][4] = wp5p;
-	
+
 	bn->setplayer(1);
 	bn->setx(4);
 	bn->sety(0);
@@ -257,16 +290,16 @@ board::board(){
 	bp5->sety(1);
 	bp5p.set(bp5);
 	TheBoard[4][1] = bp5p;
-	
+
 	emp->setplayer(2);
 	empp.set(emp);
 
 	for (int i = 0; i < 5; i++)
 		for (int j = 2; j < 4; j++)
 			TheBoard[i][j] = empp;
-			
+
 	enemiescaptured.resize(0);
-	pieceslost.resize(0);	
+	pieceslost.resize(0);
 }
 
 //
@@ -277,8 +310,8 @@ board::board(const board& other)
     TheBoard.resize(5);
     for(int i = 0; i < 5; i++)
 	TheBoard[i].resize(6);
-    
-    moveswithoutcapture = other.getMovesWithoutCapture();  
+
+    moveswithoutcapture = other.getMovesWithoutCapture();
 	playerturn = other.getplayer();
 
 	pieces addpiece;
@@ -287,7 +320,7 @@ board::board(const board& other)
 	emp->setplayer(2);
 	empp.set(emp);
 	pair <int, int> p;
-	
+
 	for (int i = 0; i < 5; i++){
 		for (int j = 0; j < 6; j++){
 			p.first = i;
@@ -356,9 +389,9 @@ board::board(const board& other)
 			}
 		}
 	}
-	
+
 	vector<pieces> v;
-	
+
 	v = other.getEnemiesCaptured();
 	for (int i = 0; i < v.size(); i++){				//move enemies captured vector
 		curpiece = v[i];
@@ -403,7 +436,7 @@ board::board(const board& other)
 			enemiescaptured.push_back(addpiece);
 		}
 	}
-	
+
 	v = other.getPiecesLost();
 	for (int i = 0; i < v.size(); i++){			//Move the pieces lost vector
 		curpiece = v[i];
@@ -462,7 +495,7 @@ board::~board(){
 	delete bp3;
 	delete bp4;
 	delete bp5;
-	
+
 	delete wr;
 	delete wb;
 	delete wk;
@@ -472,8 +505,8 @@ board::~board(){
 	delete wp2;
 	delete wp3;
 	delete wp4;
-	delete wp5;	
-	
+	delete wp5;
+
 	delete emp;
 }
 
@@ -487,7 +520,7 @@ int board::getplayer() const{
 
 double board::getHeuristic()
 {
-    return heuristicValue; 
+    return heuristicValue;
 }
 
 int board::getMovesWithoutCapture() const
@@ -512,11 +545,11 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 	pieces temppiece;
 	char a = 'a';
 	bool checkbool;
-	
+
 	bool validpieceselect = true;		//used if the initial piece choice was valid
 	bool validsecondarypiece = true;	//used if the second piece choice was
 	char capturedp;
-	
+
 	if (inputpiece == 'p' || inputpiece == 'P')			//determine if the first piece is valid
 		validpieceselect = (TheBoard[p1.first][p1.second].getpiecetypeint() == 1);
 	else if (inputpiece == 'r' || inputpiece == 'R')
@@ -531,7 +564,7 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 		validpieceselect = (TheBoard[p1.first][p1.second].getpiecetypeint() == 6);
 	else
 		validpieceselect = false;
-		
+
 	if (movetype == 'c' || movetype == 'C' || movetype == 'r' || movetype == 'R'){		//if a second piece is necessary,
 		cout << "Enter secondary piece type (K/Q/R/N/B/P): ";								//makes sure it's a valid choice
 		cin >> capturedp;
@@ -555,13 +588,13 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 			validsecondarypiece = iscapturedpiece(capturedp);
 		}
 	}
-	
+
 	pieces temp1;
 	pieces temp2;
-	
+
 	temp1 = TheBoard[p1.first][p1.second];
 	temp2 = TheBoard[p2.first][p2.second];
-	
+
 	if (isvalid(p1, p2, a)){
 		temppiece = TheBoard[p2.first][p2.second];
 		move(p1,p2,a);
@@ -569,19 +602,19 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 		if (ischeck()){
 			temp1.move(p1.first, p1.second);
 			temp2.move(p2.first, p2.second);
-			TheBoard[p1.first][p1.second] = temp1;			
+			TheBoard[p1.first][p1.second] = temp1;
 			TheBoard[p2.first][p2.second] = temp2;
 			checkbool = true;
 		}
 		else{
 			temp1.move(p1.first, p1.second);
 			temp2.move(p2.first, p2.second);
-			TheBoard[p1.first][p1.second] = temp1;			
+			TheBoard[p1.first][p1.second] = temp1;
 			TheBoard[p2.first][p2.second] = temp2;
 			checkbool = false;
 		}
 	}
-	
+
 		while(!isvalid(p1,p2, movetype) || !validpieceselect || !validsecondarypiece || checkbool){
 			if (isvalid(p1, p2, a)){
 				temppiece = TheBoard[p2.first][p2.second];
@@ -602,13 +635,13 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 				}
 			}
 			if (!isvalid(p1,p2, movetype) || !validpieceselect || !validsecondarypiece){
-			
+
 			cout << "Invalid move." << endl << endl;
 			cout << "First piece type (K/Q/R/N/B/P): ";
 			cin >> inputpiece;
 			cout << "	first X: ";
 			cin >> p;
-			
+
 			if (p == 'A'|| p == 'a')
 				p1.first = 0;
 			else if (p == 'B'|| p == 'b')
@@ -621,10 +654,10 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 				p1.first = 4;
 			else
 				p1.first = -1;
-			
+
 			cout << "	first Y: ";
 			cin >> 	num1;
-			
+
 			if (num1 == 1)
 				p1.second = 5;
 			else if (num1 == 2)
@@ -637,7 +670,7 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 				p1.second = 1;
 			else if (num1 == 6)
 				p1.second = 0;
-				
+
 			if (inputpiece == 'p' || inputpiece == 'P')
 				validpieceselect = (TheBoard[p1.first][p1.second].getpiecetypeint() == 1);
 			else if (inputpiece == 'r' || inputpiece == 'R')
@@ -652,8 +685,8 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 				validpieceselect = (TheBoard[p1.first][p1.second].getpiecetypeint() == 6);
 			else
 				validpieceselect = false;
-				
-				
+
+
 			cout << "	second X: ";
 			cin >> p;
 
@@ -672,7 +705,7 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 
 			cout << "	second Y: ";
 			cin >> 	num1;
-			
+
 			if (num1 == 1)
 				p2.second = 5;
 			else if (num1 == 2)
@@ -685,17 +718,17 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 				p2.second = 1;
 			else if (num1 == 6)
 				p2.second = 0;
-				
+
 			cout << "Enter the move type (m/c/r/p): ";
 			cin >> movetype;
-			
-			
+
+
 			while (movetype != 'M' && movetype != 'C' && movetype != 'R' && movetype != 'P' && movetype != 'm' && movetype != 'c' && movetype != 'r' && movetype != 'p' && movetype != 'A' && movetype != 'a'){
 				cout << "Invalid movetype." << endl << endl;
 				cout << "Enter the move type (m/c/r/p): ";
 				cin >> movetype;
 			}
-			
+
 			if (movetype == 'c' || movetype == 'C' || movetype == 'r' || movetype == 'R'){
 				cout << "Enter secondary piece type (K/Q/R/N/B/P): ";
 				cin >> capturedp;
@@ -719,9 +752,9 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 					validsecondarypiece = iscapturedpiece(capturedp);
 				}
 			}
-		} 
+		}
 	}
-	
+
 	move(p1,p2,movetype);
 	if (movetype == 'c' || movetype == 'C')
 		moveswithoutcapture = 0;
@@ -733,13 +766,13 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 		promotepiece(p2);
 		moveswithoutcapture = 0;
 	}
-	
-	
+
+
 }
 
 //move pieces
 void board::move(pair<int, int> p1, pair<int, int> & p2, char & movetype){
-	
+
 	pieces capturedpiece;
 	capturedpiece = TheBoard[p2.first][p2.second];
 	if (TheBoard[p2.first][p2.second].getplayer() != 2){
@@ -754,16 +787,16 @@ void board::move(pair<int, int> p1, pair<int, int> & p2, char & movetype){
 			moveswithoutcapture = -1;
 		}
 	}
-	
+
 	pieces movepiece;
 	movepiece = TheBoard[p1.first][p1.second];
 	TheBoard[p1.first][p1.second] = empp;		//Previous piece position is now empty
 	movepiece.move(p2.first, p2.second);			//make the piece know its new position
 	TheBoard[p2.first][p2.second] = movepiece;	//make the board know where the piece is
-	
-	
+
+
 	moveswithoutcapture++;
-	
+
 	playerturn = abs(playerturn - 1);
 
 }
@@ -780,13 +813,13 @@ bool board::iscapturedpiece(char capturedp){
 		pieceval = 4;
 	else if (capturedp == 'q' || capturedp == 'Q')
 		pieceval = 5;
-		
+
 	int vectorsize = 0;
 	if (playerturn == 0)					//assign the vector size according to player
 		vectorsize = pieceslost.size();
 	else
 		vectorsize = enemiescaptured.size();
-		
+
 	for (int i = 0; i < vectorsize; i++){		//check each element of the vector depending on player
 		if (playerturn == 0){
 			if (pieceslost[i].getpiecetypeint() == pieceval)
@@ -826,102 +859,102 @@ pair<int, int> board::getPieceFromAnywhere(string goal) const
     else if(goal == "wp2")
     {
         temp.first = wp2->getx();
-        temp.second = wp2->gety();       
+        temp.second = wp2->gety();
     }
     else if(goal == "wp3")
     {
         temp.first = wp3->getx();
-        temp.second = wp3->gety();       
+        temp.second = wp3->gety();
     }
     else if(goal == "wp4")
     {
         temp.first = wp4->getx();
-        temp.second = wp4->gety();       
+        temp.second = wp4->gety();
     }
     else if(goal == "wp5")
     {
         temp.first = wp5->getx();
-        temp.second = wp5->gety();         
+        temp.second = wp5->gety();
     }
     else if(goal == "wn")
     {
         temp.first = wn->getx();
-        temp.second = wn->gety();        
+        temp.second = wn->gety();
     }
     else if(goal == "wr")
     {
         temp.first = wr->getx();
-        temp.second = wr->gety();        
+        temp.second = wr->gety();
     }
     else if(goal == "wk")
     {
         temp.first = wk->getx();
-        temp.second = wk->gety();           
+        temp.second = wk->gety();
     }
     else if(goal == "wb")
     {
         temp.first = wb->getx();
-        temp.second = wb->gety();           
+        temp.second = wb->gety();
     }
     else if(goal == "wq")
     {
         temp.first = wq->getx();
-        temp.second = wq->gety();         
+        temp.second = wq->gety();
     }
     else if (goal == "bp1")
     {
         temp.first = bp1->getx();
-        temp.second = bp1->gety();         
+        temp.second = bp1->gety();
     }
     else if(goal == "bp2")
     {
         temp.first = bp2->getx();
-        temp.second = bp2->gety();         
+        temp.second = bp2->gety();
     }
     else if(goal == "bp3")
     {
         temp.first = bp3->getx();
-        temp.second = bp3->gety();         
+        temp.second = bp3->gety();
     }
     else if(goal == "bp4")
     {
         temp.first = bp4->getx();
-        temp.second = bp4->gety();        
+        temp.second = bp4->gety();
     }
     else if(goal == "bp5")
     {
         temp.first = bp5->getx();
-        temp.second = bp5->gety();         
+        temp.second = bp5->gety();
     }
     else if(goal == "bn")
     {
         temp.first = bn->getx();
-        temp.second = bn->gety();         
+        temp.second = bn->gety();
     }
         else if(goal == "br")
     {
         temp.first = br->getx();
-        temp.second = br->gety();         
+        temp.second = br->gety();
     }
     else if(goal == "bk")
     {
         temp.first = bk->getx();
-        temp.second = bk->gety();         
+        temp.second = bk->gety();
     }
     else if(goal == "bb")
     {
         temp.first = bb->getx();
-        temp.second = bb->gety();         
+        temp.second = bb->gety();
     }
     else if(goal == "bq")
     {
         temp.first = bq->getx();
-        temp.second = bq->gety();         
-    }    
+        temp.second = bq->gety();
+    }
     else
     {
         temp.first = -10;
-        temp.second = -10;        
+        temp.second = -10;
     }
     return temp;
 }
@@ -984,19 +1017,19 @@ bool board::isvalid(pair <int,int> p1, pair <int,int> p2, char movetype){
 		return false;
 	if (p1 == p2)			//positions are the same
 		return false;
-		
+
 	if (movetype == 'p' || movetype == 'P'){	//Attempts a promotion when it's not valid
 		if (!ispromotion(p2))
 			return false;
 	}
-	
+
 	vector<pair<int, int> > v;		//vector v will hold possible moves for a given piece
 	int piecenum = TheBoard[p1.first][p1.second].getpiecetypeint();
 	int curplayer = TheBoard[p1.first][p1.second].getplayer();
-	
+
 	if (curplayer != playerturn)		//selected piece is not player's
 		return false;
-	
+
 	if (piecenum == 0)			//selected board position is empty
 		return false;
 	else {					//selected position is not empty...
@@ -1015,7 +1048,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 	int localy = p1.second;
 	pair<int, int> p(localx, localy);
 	bool end = false;
-	
+
 	if (TheBoard[localx][localy].getpiecetypeint() == 1){	//PAWN
 		if (playerturn == 0){
 			if(localy != 0){			//White pawn
@@ -1081,7 +1114,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 			p.second = localy - 1;
 			if (localy == 0)
 				end = true;
-			else{				
+			else{
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
 					if (movetype != 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						v.push_back(p);
@@ -1147,10 +1180,10 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 				}
 			localx--;
 			}
-		}					
+		}
 		localx = p1.first;
 		p.first = p1.first;
-		p.second = p1.second;	
+		p.second = p1.second;
 		end = false;
 		while (!end){								//RIGHT
 			p.first = localx + 1;
@@ -1180,7 +1213,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 	p.first = p1.first;
 	p.second = p1.second;
 	end = false;
-	
+
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 3){	//KNIGHT
 		if (localy > 1){				//checking up left/right
 			p.second = localy - 2;		//we can move up, change the y coord
@@ -1718,10 +1751,10 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
 					}
 				}
 			}
-		
+
 	p.first = p1.first;
 	p.second = p1.second;
-		
+
 		}
 		if (localy != 0){			//UP
 			p.second = localy - 1;
@@ -1795,13 +1828,13 @@ bool board::ischeck(){
 		localx = wkp.getx();
 		localy = wkp.gety();
 	}
-	
+
 	pair<int, int> p1;
 	pair<int, int> p2;
 	p2.first = localx;
 	p2.second = localy;
 	pieces p;
-	
+
 	//check every space of the board
 	for (int j =0; j < 6; j++){
 		for (int i = 0; i < 5; i++){
@@ -1828,7 +1861,7 @@ pair<int, int> board::checkmaker(){
 	playerturn = abs(playerturn - 1);		//switch to opposite team
 	int localx;
 	int localy;
-	
+
 	if (playerturn == 0){
 		localx = bkp.getx();
 		localy = bkp.gety();
@@ -1837,13 +1870,13 @@ pair<int, int> board::checkmaker(){
 		localx = wkp.getx();
 		localy = wkp.gety();
 	}
-	
-	
+
+
 	pair<int, int> p1;
 	pair<int, int> p2;
 	p2.first = localx;
 	p2.second = localy;
-	
+
 	for (int j =0; j < 6; j++){
 		for (int i = 0; i < 5; i++){
 			if (TheBoard[i][j].getplayer() == playerturn){
@@ -1859,7 +1892,7 @@ pair<int, int> board::checkmaker(){
 	playerturn = abs(playerturn - 1);
 	p2.first = -1;				//No piece can put the king in check
 	p2.second = -1;
-	
+
 	return p2;						//returns bogus board position
 }
 
@@ -1869,7 +1902,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 	int localx;
 	int localy;
 	char a = 'a';
-	
+
 	if (playerturn == 1){
 		localx = bkp.getx();
 		localy = bkp.gety();
@@ -1878,11 +1911,11 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 		localx = wkp.getx();
 		localy = wkp.gety();
 	}
-	
+
 	pair<int, int> p1;
 	pair<int, int> p2;
 	pieces removedpiece;
-	
+
 	p1.first = localx;		//Try to move the king out of check
 	p1.second = localy;
 	p2.first = p1.first;
@@ -1904,10 +1937,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);		//put piece's coord's back
 			TheBoard[p2.first][p2.second] = removedpiece;	//put piece in board
 		}
-		
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
+
 		p2.first = localx - 1;		//LEFT
 		if (isvalid(p1,p2, 'a')){
 			removedpiece = TheBoard[p2.first][p2.second];
@@ -1925,10 +1958,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
+
 		p2.second = localy + 1;			//DOWN
 		if (isvalid(p1,p2, 'a')){
 			removedpiece = TheBoard[p2.first][p2.second];
@@ -1946,10 +1979,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
+
 		p2.second = localy + 1;
 		p2.first = localx + 1;
 		if (isvalid(p1,p2, 'a')){	//DOWNRIGHT
@@ -1968,11 +2001,11 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
-		
+
+
 		p2.second = localy + 1;
 		p2.first = localx - 1;
 		if (isvalid(p1,p2, 'a')){		//DOWNLEFT
@@ -1991,10 +2024,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
+
 
 		p2.second = localy - 1;
 		if (isvalid(p1,p2, 'a')){		//UP
@@ -2013,10 +2046,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
-		
+
 		p2.second = localy - 1;
 		p2.first = localx + 1;
 		if (isvalid(p1,p2, 'a')){		//UPRIGHT
@@ -2035,7 +2068,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-			
+
 		p2.first = p1.first;
 		p2.second = p1.second;
 
@@ -2057,7 +2090,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 			removedpiece.move(p2.first,p2.second);
 			TheBoard[p2.first][p2.second] = removedpiece;
 		}
-		
+
 										//Try to have something capture the checkmaker
 										//if seeing if black is in checkmate...
 	pair<int, int> p3;					//if we moved, we would have switched back, so stll black's turn
@@ -2090,7 +2123,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 
 		}
 	}
-	
+
 	playerturn = abs(playerturn - 1);
 										//Try to put something between the king and the checkmaker
 	if (playerturn == 1){
@@ -2103,7 +2136,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 	}
 	p2.first = localx;
 	p2.second = localy;
-	
+
 	int xdistance;
 	int ydistance;
 	pair<int, int> temppos;						//black's move
@@ -2116,7 +2149,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localy = p2.second;
 			else
 				localy = p3.second;
-				
+
 			localy++;
 			while (ydistance >1){
 				temppos.second = localy;
@@ -2153,7 +2186,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localx = p2.second;
 			else
 				localx = p3.second;
-				
+
 			localx++;
 			while (xdistance >1){
 				temppos.first = localx;
@@ -2190,12 +2223,12 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localy = p2.second;
 			else
 				localy = p3.second;
-				
+
 			if (p2.second < p3.second)
 				localx = p2.first;
 			else
 				localx = p3.first;
-				
+
 			localx++;
 			localy++;
 			while (ydistance > 1 && xdistance > 1){
@@ -2235,12 +2268,12 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				localy = p2.second;
 			else
 				localy = p3.second;
-				
+
 			if (p2.second > p3.second)
 				localx = p2.first;
 			else
 				localx = p3.first;
-				
+
 			localx++;
 			localy--;
 			while (ydistance > 1 && xdistance > 1){
@@ -2272,8 +2305,8 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 				xdistance--;
 			}
 	}
-	
-	
+
+
 	playerturn = abs(playerturn - 1);		//put back in black's turn
 	return true;							//the king is still in check
 
@@ -2283,7 +2316,7 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 pair<int,int> board::canbecapturedby(pair<int, int> p2){
 	playerturn = abs(playerturn - 1);
 	pair<int, int> p1;
-	
+
 	for (int j =0; j < 6; j++){
 		for (int i = 0; i < 5; i++){
 			if (TheBoard[i][j].getplayer() == playerturn){
@@ -2320,7 +2353,7 @@ void board::testmove(pair<int, int> p1, pair<int, int> p2){
 	TheBoard[p2.first][p2.second] = removedpiece;
 		cout << "the piece at p2 is of type " << removedpiece.getpiecetypeint() << " and the board at p2 is "<< TheBoard[p2.first][p2.second].getpiecetypeint() << endl;
 	display();
-	
+
 }
 
 //Check if the game is a stalemate
@@ -2350,7 +2383,7 @@ bool board::isstalemate(){
 			}
 		}
 	}
-	playerturn = abs(playerturn - 1);	
+	playerturn = abs(playerturn - 1);
 	return true;
 }
 
@@ -2369,7 +2402,7 @@ void board::rescuepiece(pair<int, int> p1, char c){
 	int vectorsize;
 	int nextpos = 1;
 	bool removed;
-	
+
 	if (playerturn == 1){			//because this happens after the move function, the playerturn has already changed
 		if (c == 'r' || c == 'R'){		//figure out what piece will be captured at set tempp as that piece
 			for (int i = 0; i < pieceslost.size(); i++){
@@ -2411,13 +2444,13 @@ void board::rescuepiece(pair<int, int> p1, char c){
 			tempp.move(p1.first,p1.second);
 			piecetype = 5;
 		}
-		
+
 		vectorsize = pieceslost.size();
-		
+
 		for (int x = 0; x < vectorsize; x++){			//go through the vector to remove it
 			if (pieceslost[x].getpiecetypeint() == piecetype)		//the current piece in the vector is the one to be removed
 				removed = true;										//so we know to start rewriting the vector
-			
+
 			if (removed){							//It's been removed, so...
 				if (nextpos >= vectorsize)					//at the last position
 					pieceslost.resize(pieceslost.size() - 1);		//so shrink down the vector by one
@@ -2471,13 +2504,13 @@ void board::rescuepiece(pair<int, int> p1, char c){
 			tempp.move(p1.first,p1.second);
 			piecetype = 5;
 		}
-		
+
 		vectorsize = enemiescaptured.size();
-		
+
 		for (int x = 0; x < vectorsize; x++){
 			if (enemiescaptured[x].getpiecetypeint() == piecetype)
 				removed = true;
-			
+
 			if (removed){
 				if (nextpos >= vectorsize)
 					enemiescaptured.resize(enemiescaptured.size() - 1);
@@ -2490,7 +2523,7 @@ void board::rescuepiece(pair<int, int> p1, char c){
 		nextpos++;
 		}
 	}
-		
+
 }
 
 //a promotion is possible
@@ -2516,16 +2549,27 @@ bool board::ispromotion(pair<int, int> p1){
 	return true;
 }
 
+bool board::isDoubled(){
+}
+
+bool board::isBlocked(){
+}
+
+bool board::isIsolated(){
+}
+
+
+
 //promote piece at position p1
 void board::promotepiece(pair<int, int> p1){
 	pieces temp;
 	temp = TheBoard[p1.first][p1.second];
 	temp.move(-1,-1);					//move the pawn off the board
-	
+
 	queen * q1 = new queen;			//Create a new queen
 	pieces q1p;						//and a piece to point at it
 	q1p.set(q1);
-	
+
 	q1p.setplayer(abs(playerturn-1));		//set the queen to the current player, switched as this occurs after move function
 	q1p.move(p1.first,p1.second);			//make the piece know where it is on the board
 	TheBoard[p1.first][p1.second] = q1p;	//make the board know where the piece should be
@@ -2561,5 +2605,71 @@ vector<board> board::expand()
 	}
 	return moveListFinal;
 }
+
+int board::evaluate(){
+
+    int eval = 0;
+
+    eval =  200 * (numberOfPieces["nK"] - numberOfPieces["nK_"])
+            + 9 * (numberOfPieces["nQ"] - numberOfPieces["nQ_"])
+            + 5 * (numberOfPieces["nR"] - numberOfPieces["nR_"])
+            + 3 * ((numberOfPieces["nB"] - numberOfPieces["nB_"])
+                    + (numberOfPieces["nN"] - numberOfPieces["nN_"]))
+            + 1 * (numberOfPieces["nP"] - numberOfPieces["nP_"])
+            - 0.5 * (numberOfPieces["doubled"] - numberOfPieces["doubled_"]
+                     + numberOfPieces["blocked"] - numberOfPieces["blocked"]
+                     + numberOfPieces["isolated"] - numberOfPieces["isolated_"])
+            + 0.1 * (numberOfPieces["mobility"] - numberOfPieces["mobility_"])
+
+
+    return eval;
+}
+
+
+/*
+
+    //   11  Prevent checkmate
+    //   10  Get checkmate / Force a tie
+    //   09  Get the king out of check
+    //   08  Prevent promotion
+    //   07  Avoid capture / Captures prevention
+    //   06  Rescue threatened piece
+    //   05  Pawn promotion
+    //   04  Capture enemy pieces
+    //   03  Threaten enemy piece
+    //   02  Get in position of threaten
+    //   01  Advance piece in direction of enemy king
+
+
+    if (board.ischeckmate()){
+        eval += 11;
+
+    } else if (board.ischeck()){
+        eval += 10;
+
+    } else if (){
+
+
+    } else if (){
+
+
+    } else if (){
+
+
+    } else if (){
+
+
+    } else if (){
+
+
+    } else if (){
+
+
+    } else if (){
+
+
+    }
+
+*/
 
 #endif
