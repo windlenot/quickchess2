@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <cstdlib>
 #include <queue>
@@ -24,15 +25,15 @@ public:
 
 int main(){
 	
-	board b1;
-	char inputpiecetype;
-	char c;
-	char p;
+	board b;
+	string inputpiecetype;
+	string c;
+	string p;
 	int curplayer;
-	int num1;
+	string num1;
 	pair<int, int> first;
 	pair<int, int> second;
-	char movetype;
+	string movetype;
 	char a = 'a';
 	bool drawend = false;
 	bool gameOver = false;
@@ -42,34 +43,34 @@ int main(){
 	//Creates a Priority queue in order to customize the compare function it uses
 	priority_queue<board, std::vector<board>, Compare> PriQTy;
 	//b is the starting/default board
-    PriQTy.push(b1);
+    PriQTy.push(b);
     //End Queue Setup
 	
 	cout << "Who will move first? w/b: ";
 	cin >> c;
-	while (c !='w' && c != 'b'){
+	while (c !="w" && c != "w"){
 		cout << "Invalid entry" << endl << endl;
 		cout << "Who will move first? w/b: ";
 		cin >> c;
 	}
 	
-	if (c == 'w'){
-		b1.startingmove(0);
+	if (c == "w"){
+		b.startingmove(0);
 		curplayer = 0;
 	}
 	else{
-		b1.startingmove(1);
+		b.startingmove(1);
 		curplayer = 1;
 	}
 		
 
-	first.first = 3;
-	first.second = 4;
-	second.first = 3;
-	second.second = 3;
-	b1.move(first,second,a);
+//	first.first = 3;
+//	first.second = 4;
+//	second.first = 3;
+//	second.second = 3;
+//	b1.move(first,second,a);
 	
-	board b(b1);
+//	board b(b1);
 
 //	first.first = 2;
 //	first.second = 1;
@@ -149,7 +150,7 @@ int main(){
 //	second.second = 4;
 //	b.move(first,second,a);
 	
- 	curplayer = 1;
+// 	curplayer = 1;
 
 
 while (!gameOver){
@@ -203,15 +204,15 @@ while (!gameOver){
 		cout << "	first X: ";
 		cin >> p;
 		
-		if (p == 'A'|| p == 'a')
+		if (p == "A"|| p == "a")
 			first.first = 0;
-		else if (p == 'B'|| p == 'b')
+		else if (p == "B"|| p == "b")
 			first.first = 1;
-		else if (p == 'C'|| p == 'c')
+		else if (p == "C"|| p == "c")
 			first.first = 2;
-		else if (p == 'D'|| p == 'd')
+		else if (p == "D"|| p == "d")
 			first.first = 3;
-		else if (p == 'E'|| p == 'e')
+		else if (p == "E"|| p == "e")
 			first.first = 4;
 		else
 			first.first = -1;
@@ -219,17 +220,17 @@ while (!gameOver){
 		cout << "	first Y: ";
 		cin >> 	num1;
 		
-		if (num1 == 1)
+		if (num1 == "1")
 			first.second = 5;
-		else if (num1 == 2)
+		else if (num1 == "2")
 			first.second = 4;
-		else if (num1 == 3)
+		else if (num1 == "3")
 			first.second = 3;
-		else if (num1 == 4)
+		else if (num1 == "4")
 			first.second = 2;
-		else if (num1 == 5)
+		else if (num1 == "5")
 			first.second = 1;
-		else if (num1 == 6)
+		else if (num1 == "6")
 			first.second = 0;
 		else
 			first.second = -1;
@@ -238,15 +239,15 @@ while (!gameOver){
 		cout << "	second X: ";
 		cin >> p;
 
-		if (p == 'A'|| p == 'a')
+		if (p == "A"|| p == "a")
 			second.first = 0;
-		else if (p == 'B'|| p == 'b')
+		else if (p == "B"|| p == "b")
 			second.first = 1;
-		else if (p == 'C'|| p == 'c')
+		else if (p == "C"|| p == "c")
 			second.first = 2;
-		else if (p == 'D'|| p == 'd')
+		else if (p == "D"|| p == "d")
 			second.first = 3;
-		else if (p == 'E'|| p == 'e')
+		else if (p == "E"|| p == "e")
 			second.first = 4;
 		else
 			second.first = -1;
@@ -254,17 +255,17 @@ while (!gameOver){
 		cout << "	second Y: ";
 		cin >> 	num1;
 		
-		if (num1 == 1)
+		if (num1 == "1")
 			second.second = 5;
-		else if (num1 == 2)
+		else if (num1 == "2")
 			second.second = 4;
-		else if (num1 == 3)
+		else if (num1 == "3")
 			second.second = 3;
-		else if (num1 == 4)
+		else if (num1 == "4")
 			second.second = 2;
-		else if (num1 == 5)
+		else if (num1 == "5")
 			second.second = 1;
-		else if (num1 == 6)
+		else if (num1 == "6")
 			second.second = 0;
 		else
 			second.second = -1;
