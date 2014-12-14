@@ -322,8 +322,10 @@ while (!gameOver){
 		
 	if (whitepoints > blackpoints)
 		cout << "White wins with " << whitepoints << " points. Black has " << blackpoints << " points." << endl;
-	else
+	else if (whitepoints < blackpoints)
 		cout << "Black wins with " << blackpoints << " points. White has " << whitepoints << " points." << endl;
+	else
+		cout << "Each team has the same points in pieces on the board. It's a draw." << endl;
 
 	}
 

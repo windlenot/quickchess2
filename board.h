@@ -693,7 +693,6 @@ void board::validatemove(char inputpiece, pair <int,int> p1, pair <int,int> p2, 
 			while (movetype != 'M' && movetype != 'C' && movetype != 'R' && movetype != 'P' && movetype != 'm' && movetype != 'c' && movetype != 'r' && movetype != 'p' && movetype != 'A' && movetype != 'a'){
 				cout << "Invalid movetype." << endl << endl;
 				cout << "Enter the move type (m/c/r/p): ";
-				cout << "AAAA" << endl;
 				cin >> movetype;
 			}
 			
@@ -2433,8 +2432,8 @@ void board::rescuepiece(pair<int, int> p1, char c){
 	}
 	else{
 		if (c == 'r' || c == 'R'){
-			for (int i = 0; i < pieceslost.size(); i++){
-				if (pieceslost[i].getpiecetypeint() == 2){
+			for (int i = 0; i < enemiescaptured.size(); i++){
+				if (enemiescaptured[i].getpiecetypeint() == 2){
 					tempp = pieceslost[i];
 				}
 			}
@@ -2443,8 +2442,8 @@ void board::rescuepiece(pair<int, int> p1, char c){
 			piecetype = 2;
 		}
 		else if (c == 'n' || c == 'N'){
-			for (int i = 0; i < pieceslost.size(); i++){
-				if (pieceslost[i].getpiecetypeint() == 3){
+			for (int i = 0; i < enemiescaptured.size(); i++){
+				if (enemiescaptured[i].getpiecetypeint() == 3){
 					tempp = pieceslost[i];
 				}
 			}
@@ -2453,8 +2452,8 @@ void board::rescuepiece(pair<int, int> p1, char c){
 			piecetype = 3;
 		}
 		else if (c == 'b' || c == 'B'){
-			for (int i = 0; i < pieceslost.size(); i++){
-				if (pieceslost[i].getpiecetypeint() == 4){
+			for (int i = 0; i < enemiescaptured.size(); i++){
+				if (enemiescaptured[i].getpiecetypeint() == 4){
 					tempp = pieceslost[i];
 				}
 			}
@@ -2463,8 +2462,8 @@ void board::rescuepiece(pair<int, int> p1, char c){
 			piecetype = 4;
 		}
 		else if (c == 'q' || c == 'Q'){
-			for (int i = 0; i < pieceslost.size(); i++){
-				if (pieceslost[i].getpiecetypeint() == 5){
+			for (int i = 0; i < enemiescaptured.size(); i++){
+				if (enemiescaptured[i].getpiecetypeint() == 5){
 					tempp = pieceslost[i];
 				}
 			}
