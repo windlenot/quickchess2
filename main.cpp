@@ -24,7 +24,7 @@ public:
 
 int main(){
 	
-	board b;
+	board b1;
 	char inputpiecetype;
 	char c;
 	char p;
@@ -42,7 +42,7 @@ int main(){
 	//Creates a Priority queue in order to customize the compare function it uses
 	priority_queue<board, std::vector<board>, Compare> PriQTy;
 	//b is the starting/default board
-    PriQTy.push(b);
+    PriQTy.push(b1);
     //End Queue Setup
 	
 	cout << "Who will move first? w/b: ";
@@ -54,20 +54,22 @@ int main(){
 	}
 	
 	if (c == 'w'){
-		b.startingmove(0);
+		b1.startingmove(0);
 		curplayer = 0;
 	}
 	else{
-		b.startingmove(1);
+		b1.startingmove(1);
 		curplayer = 1;
 	}
 		
 
-//	first.first = 3;
-//	first.second = 5;
-//	second.first = 2;
-//	second.second = 4;
-//	b.move(first,second,a);
+	first.first = 3;
+	first.second = 4;
+	second.first = 3;
+	second.second = 3;
+	b1.move(first,second,a);
+	
+	board b(b1);
 
 //	first.first = 2;
 //	first.second = 1;
@@ -147,7 +149,7 @@ int main(){
 //	second.second = 4;
 //	b.move(first,second,a);
 	
-// 	curplayer = 1;
+ 	curplayer = 1;
 
 
 while (!gameOver){

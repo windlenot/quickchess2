@@ -36,7 +36,7 @@ public:
 	void display();
 	bool isempty(pair<int, int> d);
 	void startingmove(int n);
-	int getplayer();
+	int getplayer() const;
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
         vector<board> expand();
 	
@@ -278,14 +278,14 @@ board::board(const board& other)
     for(int i = 0; i < 5; i++)
 	TheBoard[i].resize(6);
     
-    moveswithoutcapture = other.getMovesWithoutCapture();    
+    moveswithoutcapture = other.getMovesWithoutCapture();  
+	playerturn = other.getplayer();
 
 	pieces addpiece;
 	pieces curpiece;
-	empty * emptypiece = new empty;
-	emptypiece->setplayer(2);
-	pieces emptypiece2;
-	emptypiece2.set(emptypiece);
+	emp = new empty;
+	emp->setplayer(2);
+	empp.set(emp);
 	pair <int, int> p;
 	
 	for (int i = 0; i < 5; i++){
@@ -294,7 +294,7 @@ board::board(const board& other)
 			p.second = j;
 			curpiece = other.getpiece(p);
 			if (curpiece.getpiecetypeint() == 0){
-				TheBoard[i][j] = emptypiece2;
+				TheBoard[i][j] = empp;
 			}
 			else if (curpiece.getpiecetypeint() == 1){
 				pawn * pawn1 = new pawn;
@@ -337,12 +337,22 @@ board::board(const board& other)
 				TheBoard[i][j] = addpiece;
 			}
 			else if (curpiece.getpiecetypeint() == 6){
-				king * king1 = new king;
-				king1->setx(curpiece.getx());
-				king1->sety(curpiece.gety());
-				king1->setplayer(curpiece.getplayer());
-				addpiece.set(king1);
-				TheBoard[i][j] = addpiece;
+				if (curpiece.getplayer() == 0){
+					wk = new king;
+					wk->setx(curpiece.getx());
+					wk->sety(curpiece.gety());
+					wk->setplayer(curpiece.getplayer());
+					wkp.set(wk);
+					TheBoard[i][j] = wkp;
+				}
+				else{
+					bk = new king;
+					bk->setx(curpiece.getx());
+					bk->sety(curpiece.gety());
+					bk->setplayer(curpiece.getplayer());
+					bkp.set(bk);
+					TheBoard[i][j] = bkp;
+				}
 			}
 		}
 	}
@@ -471,7 +481,7 @@ void board::startingmove(int n){
 	playerturn = n;
 }
 
-int board::getplayer(){
+int board::getplayer() const{
 	return playerturn;
 }
 
@@ -1787,7 +1797,6 @@ bool board::ischeck(){
 		localy = wkp.gety();
 	}
 	
-	
 	pair<int, int> p1;
 	pair<int, int> p2;
 	p2.first = localx;
@@ -2424,25 +2433,41 @@ void board::rescuepiece(pair<int, int> p1, char c){
 	}
 	else{
 		if (c == 'r' || c == 'R'){
-			tempp = brp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 2){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 2;
 		}
 		else if (c == 'n' || c == 'N'){
-			tempp = bnp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 3){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 3;
 		}
 		else if (c == 'b' || c == 'B'){
-			tempp = bbp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 4){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 4;
 		}
 		else if (c == 'q' || c == 'Q'){
-			tempp = bqp;
+			for (int i = 0; i < pieceslost.size(); i++){
+				if (pieceslost[i].getpiecetypeint() == 5){
+					tempp = pieceslost[i];
+				}
+			}
 			TheBoard[p1.first][p1.second] = tempp;
 			tempp.move(p1.first,p1.second);
 			piecetype = 5;
