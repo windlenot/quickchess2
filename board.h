@@ -62,19 +62,17 @@ public:
 	bool ispromotion(pair<int, int> p1);
 	bool ischeck();
 	bool isrescue();
-	bool isDoubled();
-	bool isBlocked();
-	bool isIsolated();
+	bool isDoubled(pair<int,int> pawnPosition, int player);
+	bool isBlocked(pair<int,int> pawnPosition, int player);
+	bool isIsolated(pair<int,int> pawnPosition, int player);
 	
 	void updateHeuristicValue();
 
-<<<<<<< HEAD
+
 	void updateHeuristicValue(double newVal);
 
 	double evaluate();
-=======
-	float evaluate();
->>>>>>> 63b0cd799fe13952995873904a9f9b5e64281612
+
 	//...
 
 private:
@@ -2650,15 +2648,15 @@ bool board::ispromotion(pair<int, int> p1){
 bool board::isDoubled(pair<int,int> pawnPosition, int player){
     bool answer = false;
     if (player == 0) { //White
-        for (i=pawnPosition.first; i>1; i--){
-            if (TheBoard[i-1][pawnPosition.second].getpiecetypeint == 1 && TheBoard[i-1][pawnPosition.second].getplayer() == playerturn){
+        for (int i=pawnPosition.first; i>1; i--){
+            if (TheBoard[i-1][pawnPosition.second].getpiecetypeint() == 1 && TheBoard[i-1][pawnPosition.second].getplayer() == playerturn){
                 return true;
             }
         }
     }
     else { //Black
-        for (i=pawnPosition.first; i<4; i++)
-            if (TheBoard[i+1][pawnPosition.second].getpiecetypeint == 1 && TheBoard[i+1][pawnPosition.second].getplayer() == playerturn){
+        for (int i=pawnPosition.first; i<4; i++)
+            if (TheBoard[i+1][pawnPosition.second].getpiecetypeint() == 1 && TheBoard[i+1][pawnPosition.second].getplayer() == playerturn){
                 return true;
             }
     }
@@ -2669,14 +2667,14 @@ bool board::isBlocked(pair<int,int> pawnPosition, int player){
     bool answer = false;
     if (player == 0) { //White
         if (pawnPosition.first > 0){
-            if (TheBoard[pawnPosition.first-1][pawnPosition.second].getpiecetypeint != 0){
+            if (TheBoard[pawnPosition.first-1][pawnPosition.second].getpiecetypeint() != 0){
                 return true;
             }
         }
     }
     else { //Black
         if (pawnPosition.first < 5){
-            if (TheBoard[pawnPosition.first+1][pawnPosition.second].getpiecetypeint != 0){
+            if (TheBoard[pawnPosition.first+1][pawnPosition.second].getpiecetypeint() != 0){
                 return true;
             }
         }
@@ -2690,14 +2688,14 @@ bool board::isIsolated(pair<int,int> pawnPosition, int player){
     bool rightColumnHasNoPawns = true;
 
     if (pawnPosition.second > 0 && pawnPosition.second < 4){
-        for (i=0; i<5; i++){
-            if (TheBoard[i][pawnPosition.second-1].getpiecetypeint == 1){
+        for (int i=0; i<5; i++){
+            if (TheBoard[i][pawnPosition.second-1].getpiecetypeint() == 1){
                 leftColumnHasNoPawns = false;  //Has at least one pawn
                 break;
             }
         }
-        for (j=0; j<5; j++){
-            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint == 1){
+        for (int j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint() == 1){
                 rightColumnHasNoPawns = false;  //Has at least one pawn
                 break;
             }
@@ -2706,8 +2704,8 @@ bool board::isIsolated(pair<int,int> pawnPosition, int player){
             return true;
         }
     } else if (pawnPosition.second == 0){
-        for (j=0; j<5; j++){
-            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint == 1){
+        for (int j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint() == 1){
                 rightColumnHasNoPawns = false;
                 break;
             }
@@ -2716,8 +2714,8 @@ bool board::isIsolated(pair<int,int> pawnPosition, int player){
             return true;
         }
     } else if (pawnPosition.second == 4){
-        for (j=0; j<5; j++){
-            if (TheBoard[j][pawnPosition.second-1].getpiecetypeint == 1){
+        for (int j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second-1].getpiecetypeint() == 1){
                 leftColumnHasNoPawns = false;
                 break;
             }
@@ -2768,7 +2766,8 @@ vector<board> board::expand(bool isCpu) const
 				for(int k = 0; k < expansion.size(); k++)
 				{
 					board temp = *this;
-					temp.move(exp, expansion[k], 'c');
+					char c = 'c';
+					temp.move(exp, expansion[k], c);
 					temp.updateHeuristicValue();
 					moveListFinal.push_back(temp);
 				}
@@ -2778,43 +2777,39 @@ vector<board> board::expand(bool isCpu) const
 	return moveListFinal;
 }
 
-<<<<<<< HEAD
-double board::evaluate(){
-    double eval = 0;
-=======
 /*
 // Evaluates and gives a float value to the current board
 //
 */
-float board::evaluate(){
-    int eval = 0;
->>>>>>> 63b0cd799fe13952995873904a9f9b5e64281612
+double board::evaluate(){
+    double eval = 0;
+
 
     pair<int,int> piecePosition;
     int mobility = 0;
 
-    for (i=0; i<5; i++){
-        for (j=0; j<4; j++){
+    for (int i=0; i<5; i++){
+        for (int j=0; j<4; j++){
             piecePosition.first = i;
             piecePosition.second = j;
 
             if (TheBoard[i][j].getpiecetypeint() == 1){
-                if isDoubled(piecePosition, playerturn){
+                if (isDoubled(piecePosition, playerturn)){
                     numberOfPieces["doubled"]++;
                 }
-                if isBlocked(piecePosition, playerturn){
+                if (isBlocked(piecePosition, playerturn)){
                     numberOfPieces["blocked"]++;
                 }
-                if isIsolated(piecePosition, playerturn){
+                if (isIsolated(piecePosition, playerturn)){
                     numberOfPieces["isolated"]++;
                 }
-            }
+			}
             if (TheBoard[i][j].getpiecetypeint() != 0){
                 mobility += generatemoves(piecePosition,'a').size();
             }
 
             if (playerturn == 0){
-                switch (TheBoard[i][j].getpiecetypeint){
+                switch (TheBoard[i][j].getpiecetypeint()){
                     case 1:
                         numberOfPieces["nP"]++;
                     case 2:
@@ -2830,7 +2825,7 @@ float board::evaluate(){
                 }
             }
             else {
-                switch (TheBoard[i][j].getpiecetypeint){
+                switch (TheBoard[i][j].getpiecetypeint()){
                     case 1:
                         numberOfPieces["nP_"]++;
                     case 2:
