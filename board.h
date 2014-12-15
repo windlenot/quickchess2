@@ -68,9 +68,13 @@ public:
 	
 	void updateHeuristicValue();
 
+<<<<<<< HEAD
 	void updateHeuristicValue(double newVal);
 
 	double evaluate();
+=======
+	float evaluate();
+>>>>>>> 63b0cd799fe13952995873904a9f9b5e64281612
 	//...
 
 private:
@@ -2643,16 +2647,86 @@ bool board::ispromotion(pair<int, int> p1){
 	return true;
 }
 
-bool board::isDoubled(){
-    return false;
+bool board::isDoubled(pair<int,int> pawnPosition, int player){
+    bool answer = false;
+    if (player == 0) { //White
+        for (i=pawnPosition.first; i>1; i--){
+            if (TheBoard[i-1][pawnPosition.second].getpiecetypeint == 1 && TheBoard[i-1][pawnPosition.second].getplayer() == playerturn){
+                return true;
+            }
+        }
+    }
+    else { //Black
+        for (i=pawnPosition.first; i<4; i++)
+            if (TheBoard[i+1][pawnPosition.second].getpiecetypeint == 1 && TheBoard[i+1][pawnPosition.second].getplayer() == playerturn){
+                return true;
+            }
+    }
+    return answer;
 }
 
-bool board::isBlocked(){
-    return false;
+bool board::isBlocked(pair<int,int> pawnPosition, int player){
+    bool answer = false;
+    if (player == 0) { //White
+        if (pawnPosition.first > 0){
+            if (TheBoard[pawnPosition.first-1][pawnPosition.second].getpiecetypeint != 0){
+                return true;
+            }
+        }
+    }
+    else { //Black
+        if (pawnPosition.first < 5){
+            if (TheBoard[pawnPosition.first+1][pawnPosition.second].getpiecetypeint != 0){
+                return true;
+            }
+        }
+    }
+    return answer;
 }
 
-bool board::isIsolated(){
-    return false;
+bool board::isIsolated(pair<int,int> pawnPosition, int player){
+    bool answer = false;
+    bool leftColumnHasNoPawns = true;
+    bool rightColumnHasNoPawns = true;
+
+    if (pawnPosition.second > 0 && pawnPosition.second < 4){
+        for (i=0; i<5; i++){
+            if (TheBoard[i][pawnPosition.second-1].getpiecetypeint == 1){
+                leftColumnHasNoPawns = false;  //Has at least one pawn
+                break;
+            }
+        }
+        for (j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint == 1){
+                rightColumnHasNoPawns = false;  //Has at least one pawn
+                break;
+            }
+        }
+        if (leftColumnHasNoPawns && rightColumnHasNoPawns){
+            return true;
+        }
+    } else if (pawnPosition.second == 0){
+        for (j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second+1].getpiecetypeint == 1){
+                rightColumnHasNoPawns = false;
+                break;
+            }
+        }
+        if (rightColumnHasNoPawns){
+            return true;
+        }
+    } else if (pawnPosition.second == 4){
+        for (j=0; j<5; j++){
+            if (TheBoard[j][pawnPosition.second-1].getpiecetypeint == 1){
+                leftColumnHasNoPawns = false;
+                break;
+            }
+        }
+        if (leftColumnHasNoPawns){
+            return true;
+        }
+    }
+    return answer;
 }
 
 
@@ -2704,8 +2778,76 @@ vector<board> board::expand(bool isCpu) const
 	return moveListFinal;
 }
 
+<<<<<<< HEAD
 double board::evaluate(){
     double eval = 0;
+=======
+/*
+// Evaluates and gives a float value to the current board
+//
+*/
+float board::evaluate(){
+    int eval = 0;
+>>>>>>> 63b0cd799fe13952995873904a9f9b5e64281612
+
+    pair<int,int> piecePosition;
+    int mobility = 0;
+
+    for (i=0; i<5; i++){
+        for (j=0; j<4; j++){
+            piecePosition.first = i;
+            piecePosition.second = j;
+
+            if (TheBoard[i][j].getpiecetypeint() == 1){
+                if isDoubled(piecePosition, playerturn){
+                    numberOfPieces["doubled"]++;
+                }
+                if isBlocked(piecePosition, playerturn){
+                    numberOfPieces["blocked"]++;
+                }
+                if isIsolated(piecePosition, playerturn){
+                    numberOfPieces["isolated"]++;
+                }
+            }
+            if (TheBoard[i][j].getpiecetypeint() != 0){
+                mobility += generatemoves(piecePosition,'a').size();
+            }
+
+            if (playerturn == 0){
+                switch (TheBoard[i][j].getpiecetypeint){
+                    case 1:
+                        numberOfPieces["nP"]++;
+                    case 2:
+                        numberOfPieces["nR"]++;
+                    case 3:
+                        numberOfPieces["nN"]++;
+                    case 4:
+                        numberOfPieces["nB"]++;
+                    case 5:
+                        numberOfPieces["nQ"]++;
+                    case 6:
+                        numberOfPieces["nK"]++;
+                }
+            }
+            else {
+                switch (TheBoard[i][j].getpiecetypeint){
+                    case 1:
+                        numberOfPieces["nP_"]++;
+                    case 2:
+                        numberOfPieces["nR_"]++;
+                    case 3:
+                        numberOfPieces["nN_"]++;
+                    case 4:
+                        numberOfPieces["nB_"]++;
+                    case 5:
+                        numberOfPieces["nQ_"]++;
+                    case 6:
+                        numberOfPieces["nK_"]++;
+                }
+            }
+        }
+    }
+    numberOfPieces["mobility"] = mobility;
 
     eval =  200 * (numberOfPieces["nK"] - numberOfPieces["nK_"])
             + 9 * (numberOfPieces["nQ"] - numberOfPieces["nQ_"])
