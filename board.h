@@ -27,7 +27,7 @@ public:
 	~board();
 
 	//vector<ordered_pair> checkallvalidpositions(piece p);
-        double getHeuristic();
+        double getHeuristic() const;
 	void validatemove(string inputpiece, pair <int,int> p1, pair <int,int> p2, string movetype);
 	void move(pair <int,int> p1, pair <int,int> & p2, char & movetype);
 	pieces getpiece (pair<int, int> d) const;
@@ -40,12 +40,12 @@ public:
 	void startingmove(int n);
 	int getplayer() const;
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
-        vector<board> expand();
+    vector<board> expand(bool isCpu) const;
 
 	vector<pair<int, int> > canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
 
-	vector<pair <int, int> > generatemoves(pair <int,int> p1, char movetype);
+	vector<pair <int, int> > generatemoves(pair <int,int> p1, char movetype) const;
 	bool isinvector(vector<pair <int, int> > v,pair <int,int> p1);
 
 	void testmove(pair<int, int> p1, pair<int, int> p2);
@@ -65,8 +65,12 @@ public:
 	bool isDoubled();
 	bool isBlocked();
 	bool isIsolated();
+	
+	void updateHeuristicValue();
 
-	int evaluate();
+	void updateHeuristicValue(double newVal);
+
+	double evaluate();
 	//...
 
 private:
@@ -154,7 +158,7 @@ board::board(){
 	wp5 = new pawn;
 	emp = new empty;
 
-
+	heuristicValue = 0;
 	enemiescaptured.resize(0);
 	pieceslost.resize(0);
 
@@ -320,6 +324,7 @@ board::board(const board& other)
 
     moveswithoutcapture = other.getMovesWithoutCapture();
 	playerturn = other.getplayer();
+	heuristicValue = other.getHeuristic();
 
 	pieces addpiece;
 	pieces curpiece;
@@ -525,7 +530,7 @@ int board::getplayer() const{
 	return playerturn;
 }
 
-double board::getHeuristic()
+double board::getHeuristic() const
 {
     return heuristicValue;
 }
@@ -1080,6 +1085,13 @@ bool board::isvalid(pair <int,int> p1, pair <int,int> p2, char movetype){
 		if (!ispromotion(p2))
 			return false;
 	}
+	
+	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 1){		//Pawn's can't just move to baseline
+		if (p2.second == 0 || p2.second == 5){						//Check if destination is a baseline
+			if (movetype == 'm' || movetype == 'M')				//Make sure it's not a move
+				return false;										//If it is, it's invalid
+		}
+	}
 
 	vector<pair<int, int> > v;		//vector v will hold possible moves for a given piece
 	int piecenum = TheBoard[p1.first][p1.second].getpiecetypeint();
@@ -1099,7 +1111,7 @@ bool board::isvalid(pair <int,int> p1, pair <int,int> p2, char movetype){
 
 //generates all possible moves of piece at position p1 given the type of move movetype
 //returns a vector of positions
-vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype){
+vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) const{
 	vector<pair<int, int> > v;
 	v.resize(0);
 	int localx = p1.first;
@@ -2662,37 +2674,38 @@ void board::promotepiece(pair<int, int> p1){
 
 
 //
-//Expands the board one move
-//TO DO:Make a copy constructor and replace this line with that
-//TO DO:Heuristic Function working per board
-//
-vector<board> board::expand()
+//Expands the board one moves
+vector<board> board::expand(bool isCpu) const
 {
     char move = 'a';
 	vector<pair <int, int> > expansion;
 	vector<board> moveListFinal;
-        pair<int,int> exp;
-	for (int j = 0; j < 6; j++){
-		for (int i = 0; i < 5; i++){
-                exp.first = i;
-                exp.second = j;
-		expansion = generatemoves(exp, move);
-		//Check for captures first
-			for(int k = 0; k < expansion.size(); k++)
+    pair<int, int> exp;
+	for (int j = 0; j < 6; j++)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+            exp.first = i;
+            exp.second = j;
+			//Black is player 1 and true, white is 0 and false
+			if(isCpu && this->getpiece(exp).getplayer())
 			{
-				board temp = *this;
-				//temp.move((i, j), expansion[k], 'c');
-				//TO DO:If not updating on fly, this next line will be needed
-				//temp.updateHeuristicValue();
-				moveListFinal.push_back(temp);
+				expansion = generatemoves(exp, move);
+				for(int k = 0; k < expansion.size(); k++)
+				{
+					board temp = *this;
+					temp.move(exp, expansion[k], 'c');
+					temp.updateHeuristicValue();
+					moveListFinal.push_back(temp);
+				}
 			}
 		}
 	}
 	return moveListFinal;
 }
 
-int board::evaluate(){
-    int eval = 0;
+double board::evaluate(){
+    double eval = 0;
 
     eval =  200 * (numberOfPieces["nK"] - numberOfPieces["nK_"])
             + 9 * (numberOfPieces["nQ"] - numberOfPieces["nQ_"])
@@ -2706,6 +2719,16 @@ int board::evaluate(){
             + 0.1 * (numberOfPieces["mobility"] - numberOfPieces["mobility_"]);
 
     return eval;
+}
+
+void board::updateHeuristicValue()
+{
+//Code for H' detection here
+}
+
+void board::updateHeuristicValue(double newVal)
+{
+	heuristicValue = newVal;
 }
 
 

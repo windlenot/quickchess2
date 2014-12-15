@@ -42,9 +42,12 @@ int main(){
     //Start Queue Setup
 	//Creates a Priority queue in order to customize the compare function it uses
 	priority_queue<board, std::vector<board>, Compare> PriQTy;
-	//b is the starting/default board
-    PriQTy.push(b);
     //End Queue Setup
+	double curHeuristic;
+	vector<board> expansion;
+	vector<board> expansion2;
+	
+	
 	
 	cout << "Who will move first? w/b: ";
 	cin >> c;
@@ -193,7 +196,7 @@ while (!gameOver){
 		drawend = true;
 	}
 		
-	if (!gameOver){
+	if (!gameOver && curplayer == 0){
 		if (curplayer == 0)
 			cout << "White's turn:" <<endl;
 		else
@@ -276,6 +279,39 @@ while (!gameOver){
 		b.validatemove(inputpiecetype, first, second, movetype);
 		
 		curplayer = abs(curplayer - 1);
+		}
+		else if(!gameOver && curplayer == 1)
+		{
+			expansion = b.expand(true);
+			for(int i = 0; i < expansion.size(); i++)
+			{
+				expansion2 = expansion[i].expand(false);
+				for(int j = 0; j < expansion2.size(); j++)
+				{
+					PriQTy.push(expansion2[j]);
+				}
+				curHeuristic = 0;
+				//curHeuristic = (-1.0 * PriQTy.top().getHeuristic())
+				bool tr = true;
+				expansion2 = PriQTy.top().expand(tr);
+				PriQTy.empty();
+				for(int k = 0; k < expansion2.size(); k++)
+				{
+					PriQTy.push(expansion2[k]);
+				}
+				//curHeuristic += PriQTy.top().getHeuristic();
+				curHeuristic += expansion[i].getHeuristic();
+	
+				expansion[i].updateHeuristicValue(curHeuristic);	
+				PriQTy.empty();
+			}
+
+			for(int l = 0; l < expansion.size(); l++)
+			{
+				PriQTy.push(expansion[l]);
+			}
+			board bPrime(PriQTy.top());
+			b = bPrime;
 		}
 	}
 
