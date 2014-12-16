@@ -51,7 +51,7 @@ int main(){
 	
 	cout << "Who will move first? w/b: ";
 	cin >> c;
-	while (c !="w" && c != "w"){
+	while (c !="w" && c != "b"){
 		cout << "Invalid entry" << endl << endl;
 		cout << "Who will move first? w/b: ";
 		cin >> c;
@@ -67,8 +67,8 @@ int main(){
 	}
 		
 
-//	first.first = 3;
-//	first.second = 4;
+//	first.first = 0;
+//	first.second = 1;
 //	second.first = 3;
 //	second.second = 3;
 //	b1.move(first,second,a);
@@ -280,9 +280,11 @@ while (!gameOver){
 		
 		curplayer = abs(curplayer - 1);
 		}
-		else if(!gameOver && curplayer == 1)
+		else if(!gameOver && curplayer == 1)				//AI STARTS
 		{
+			cout << "in ai move" << endl;
 			expansion = b.expand(true);
+			cout << "in ai move" << endl;
 			for(int i = 0; i < expansion.size(); i++)
 			{
 				expansion2 = expansion[i].expand(false);
@@ -291,7 +293,7 @@ while (!gameOver){
 					PriQTy.push(expansion2[j]);
 				}
 				curHeuristic = 0;
-				//curHeuristic = (-1.0 * PriQTy.top().getHeuristic())
+				curHeuristic = (-1.0 * PriQTy.top().getHeuristic());
 				bool tr = true;
 				expansion2 = PriQTy.top().expand(tr);
 				PriQTy.empty();
@@ -299,7 +301,7 @@ while (!gameOver){
 				{
 					PriQTy.push(expansion2[k]);
 				}
-				//curHeuristic += PriQTy.top().getHeuristic();
+				curHeuristic += PriQTy.top().getHeuristic();
 				curHeuristic += expansion[i].getHeuristic();
 	
 				expansion[i].updateHeuristicValue(curHeuristic);	

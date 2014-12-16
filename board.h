@@ -68,10 +68,15 @@ public:
 	
 	void updateHeuristicValue();
 
-
 	void updateHeuristicValue(double newVal);
 
 	double evaluate();
+	
+	double isCapture();
+	
+	double isThreaten();
+	
+	bool isPromotionBoard();
 
 	//...
 
@@ -132,7 +137,7 @@ private:
 
 	bool iswhiteincheck();
 
-	std::map<string,int> numberOfPieces;
+	map<string,int> numberOfPieces;
 
 	//...
 };
@@ -1878,7 +1883,6 @@ bool board::isinvector(vector<pair <int, int> > v,pair <int,int> p1){
 	for (int i = 0; i < v.size(); i++){
 //		cout << "(" << v[i].first << " , " << v[i].second << ")";
 	}
-	cout << endl;
 	for (int i = 0; i < v.size(); i++){
 		if (v[i] == p1)
 			return true;
@@ -1915,7 +1919,7 @@ bool board::ischeck(){
 				p1.first = i;
 				p1.second = j;
 				if (isvalid(p1, p2, 'c')){			//see if the capture is possible
-					cout << endl << p.getpiecetypeint() << endl;
+					//cout << endl << p.getpiecetypeint() << endl;
 					playerturn = abs(playerturn - 1);		//return to original player
 					return true;						//return true
 				}
@@ -2749,30 +2753,40 @@ void board::promotepiece(pair<int, int> p1){
 //Expands the board one moves
 vector<board> board::expand(bool isCpu) const
 {
+	cout <<"in expand" << endl;
     char move = 'a';
 	vector<pair <int, int> > expansion;
 	vector<board> moveListFinal;
     pair<int, int> exp;
-	for (int j = 0; j < 6; j++)
+	for (int i = 0; i < 5; i++)
 	{
-		for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 6; j++)
 		{
             exp.first = i;
             exp.second = j;
 			//Black is player 1 and true, white is 0 and false
-			if(isCpu && this->getpiece(exp).getplayer())
+			if(isCpu && this->getpiece(exp).getplayer() == playerturn)
 			{
 				expansion = generatemoves(exp, move);
+				cout << "expansion is " << expansion.size() << endl;
 				for(int k = 0; k < expansion.size(); k++)
 				{
+					cout <<"in for 3 with k " << k << endl;
 					board temp = *this;
-					char c = 'c';
-					temp.move(exp, expansion[k], c);
+					cout << "beforemove" << endl;
+					temp.move(exp, expansion[k], move);
+					cout << "beforehueristic" << endl;
 					temp.updateHeuristicValue();
+					cout << "before push" << endl;
 					moveListFinal.push_back(temp);
+					cout << "end of loop" << endl;
+					break;
 				}
+					cout << "end for 3" << endl;
 			}
+			cout << "Didn't hit if" << endl;
 		}
+		cout << "after one row" << endl;
 	}
 	return moveListFinal;
 }
@@ -2860,12 +2874,154 @@ double board::evaluate(){
 
 void board::updateHeuristicValue()
 {
-//Code for H' detection here
+	vector<board> v;
+	bool Hset = false;
+	pieces p1;
+	pieces p2;
+	vector<pieces> possiblecaps;
+	cout << "in update heuristic" << endl;
+	
+	if (ischeckmate()){			//current player is in checkmate
+		updateHeuristicValue(1000);
+		Hset = true;
+	}
+	playerturn = abs(playerturn - 1);
+	if (ischeckmate()){
+		updateHeuristicValue(1000);
+		Hset = true;
+	}
+	playerturn = abs(playerturn - 1);
+	if (!Hset){			//can be put into checkmate
+		v = expand(true);
+		for (int i = 0; i < v.size(); i++){
+			if (v[i].ischeckmate()){
+				updateHeuristicValue(900);
+				Hset = true;
+				i = v.size();
+			}
+			playerturn = abs(playerturn - 1);
+			if (v[i].ischeckmate()){
+				updateHeuristicValue(900);
+				Hset = true;
+				i = v.size();
+			}
+			playerturn = abs(playerturn - 1);
+		}
+	}
+	else if(!Hset){	//prevent promotion
+		for (int i = 0; i < v.size(); i++){
+			if (v[i].isPromotionBoard()){
+				updateHeuristicValue(800);
+				i = v.size();
+			}
+			playerturn = abs(playerturn - 1);
+			if (v[i].isPromotionBoard()){
+				updateHeuristicValue(800);
+				i = v.size();
+			}
+			playerturn = abs(playerturn - 1);
+		}
+	}
+	else{
+		double evaluation = evaluate();
+		double threaten = isThreaten();
+		double possiblecaps = isCapture();
+		double higher;
+		if (threaten > possiblecaps)
+			higher = threaten;
+		else
+			higher = possiblecaps;
+			
+		evaluation = evaluation + higher;
+		updateHeuristicValue(evaluation);
+	}
 }
 
 void board::updateHeuristicValue(double newVal)
 {
 	heuristicValue = newVal;
+}
+
+
+double board::isCapture(){
+	double curhigh = 0;
+	for (int i = 0; i < 5; i++){
+		for (int j = 0; j < 6; j++){
+			if (TheBoard[i][j].getplayer() != playerturn)
+				if (TheBoard[i][j].getpiecetypeint() > curhigh)
+					curhigh = TheBoard[i][j].getpiecetypeint();
+		}
+	}
+	return curhigh;
+}
+
+double board::isThreaten(){
+	vector<pair<int, int> > v;
+	pair<int, int> p;
+	double curhigh = 0;
+	for (int i = 0; i < 5; i++){
+		for (int j = 0; j < 6; j++){
+			p.first = i;
+			p.second =j;
+			v = canbecapturedby(p);
+			if (v.size() != 0)
+				if (TheBoard[i][j].getpiecetypeint() > curhigh)
+					curhigh = TheBoard[i][j].getpiecetypeint();
+		}
+	}
+	return curhigh;
+}
+
+bool board::isPromotionBoard(){
+	pair<int, int> p;
+	pair<int, int> p2;
+	char a = 'a';
+	for (int i = 0; i < 5; i++){
+		for (int j = 0; j < 6; j++){
+			if (TheBoard[i][j].getpiecetypeint() == 1){
+				if (TheBoard[i][j].getplayer() == playerturn){
+					p.first = i;
+					p.second =j;
+					if (playerturn == 0){
+						if (j == 1){
+							p2.second = 0;
+							p2.first = i - 1;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+							p2.first = i;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+							p2.first = i+1;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+							
+						}
+					}
+					else{
+						if (j == 4){
+							p2.second = 5;
+							p2.first = i - 1;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+							p2.first = i;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+							p2.first = i+1;
+							if(isvalid(p,p2,a))
+								if(ispromotion(p2))
+									return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
 
