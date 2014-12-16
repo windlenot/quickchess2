@@ -12,12 +12,11 @@ using namespace std;
 //
 //This is the custom function that compares boards 
 //in the Priority Queue based on h' value
-class Compare
+struct Compare
 {
-public:
-    bool operator() (board x, board y)
+    bool operator() (const board & x, const board & y)
     {
-       return (x.getHeuristic() < y.getHeuristic());
+       return (x.getHeuristic() > y.getHeuristic());
     }
 };
 
@@ -284,34 +283,49 @@ while (!gameOver){
 		{
 			cout << "in ai move" << endl;
 			expansion = b.expand(true);
-			cout << "in ai move" << endl;
+			cout << "back in ai move" << endl;
 			for(int i = 0; i < expansion.size(); i++)
 			{
 				expansion2 = expansion[i].expand(false);
-				for(int j = 0; j < expansion2.size(); j++)
+				cout << "back again" << endl;
+				for(int j = 0; j < 2; j++)
 				{
+					cout << "before push" << endl;
 					PriQTy.push(expansion2[j]);
+					cout << "after push" << endl;
 				}
+				cout << "after priqty pushes" << endl;
 				curHeuristic = 0;
-				curHeuristic = (-1.0 * PriQTy.top().getHeuristic());
+				board temp;
+				temp = PriQTy.top();
+				curHeuristic = (-1.0 * temp.getHeuristic());
 				bool tr = true;
-				expansion2 = PriQTy.top().expand(tr);
+				cout << "before expansion2 assign" << endl;
+				temp = PriQTy.top();
+				expansion2 = temp.expand(tr);
+				cout << "after that" << endl;
 				PriQTy.empty();
-				for(int k = 0; k < expansion2.size(); k++)
+				cout << "before prqty 2" << endl;
+				for(int k = 0; k < 2; k++)
 				{
+					cout << "Inside for expansion2";
 					PriQTy.push(expansion2[k]);
 				}
+				cout << "after for 2" << endl;
 				curHeuristic += PriQTy.top().getHeuristic();
 				curHeuristic += expansion[i].getHeuristic();
+				cout << "before another update h'" << endl;
 	
 				expansion[i].updateHeuristicValue(curHeuristic);	
+				cout << "after update h'" << endl;
 				PriQTy.empty();
 			}
-
+			cout <<endl << endl << endl<< "		before for 5" << endl << endl << endl;
 			for(int l = 0; l < expansion.size(); l++)
 			{
 				PriQTy.push(expansion[l]);
 			}
+			cout << "			after for 5" << endl;
 			board bPrime(PriQTy.top());
 			b = bPrime;
 		}
