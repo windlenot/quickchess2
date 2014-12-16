@@ -9,21 +9,9 @@
 
 using namespace std;
 
-//
-//This is the custom function that compares boards 
-//in the Priority Queue based on h' value
-struct Compare
-{
-    bool operator() (const board & x, const board & y)
-    {
-       return (x.getHeuristic() > y.getHeuristic());
-    }
-};
-
-
 
 int main(){
-	
+
 	board b;
 	string inputpiecetype;
 	string c;
@@ -40,13 +28,12 @@ int main(){
 	
     //Start Queue Setup
 	//Creates a Priority queue in order to customize the compare function it uses
-	priority_queue<board, std::vector<board>, Compare> PriQTy;
+	typedef priority_queue<board, std::vector<board>, less <board> > priQ;
+	priQ PriQTy;
     //End Queue Setup
 	double curHeuristic;
 	vector<board> expansion;
 	vector<board> expansion2;
-	
-	
 	
 	cout << "Who will move first? w/b: ";
 	cin >> c;
@@ -284,11 +271,12 @@ while (!gameOver){
 			cout << "in ai move" << endl;
 			expansion = b.expand(true);
 			cout << "back in ai move" << endl;
-			for(int i = 0; i < expansion.size(); i++)
+			for(int i = 0; i < expansion.size() - 1; i++)
 			{
+				cout << "			BEGIN FOR LOOP ITERATION "<< i << endl;
 				expansion2 = expansion[i].expand(false);
 				cout << "back again" << endl;
-				for(int j = 0; j < 2; j++)
+				for(int j = 0; j < expansion.size(); j++)
 				{
 					cout << "before push" << endl;
 					PriQTy.push(expansion2[j]);
@@ -304,9 +292,15 @@ while (!gameOver){
 				temp = PriQTy.top();
 				expansion2 = temp.expand(tr);
 				cout << "after that" << endl;
-				PriQTy.empty();
+					
+				while(!PriQTy.empty()){
+					cout << "prepop" << endl;
+					PriQTy.pop();
+					cout << "popped" << endl;
+				}
+				
 				cout << "before prqty 2" << endl;
-				for(int k = 0; k < 2; k++)
+				for(int k = 0; k < expansion2.size(); k++)
 				{
 					cout << "Inside for expansion2";
 					PriQTy.push(expansion2[k]);
@@ -318,7 +312,10 @@ while (!gameOver){
 	
 				expansion[i].updateHeuristicValue(curHeuristic);	
 				cout << "after update h'" << endl;
-				PriQTy.empty();
+				while(!PriQTy.empty()){
+					PriQTy.pop();
+					cout <<"POOPPIN" << endl;
+				}
 			}
 			cout <<endl << endl << endl<< "		before for 5" << endl << endl << endl;
 			for(int l = 0; l < expansion.size(); l++)
@@ -328,6 +325,7 @@ while (!gameOver){
 			cout << "			after for 5" << endl;
 			board bPrime(PriQTy.top());
 			b = bPrime;
+			curplayer = abs(curplayer - 1);
 		}
 	}
 

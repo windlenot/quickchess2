@@ -504,29 +504,29 @@ board::board(const board& other)
 
 //destructor
 board::~board(){
-	delete br;
-	delete bb;
-	delete bk;
-	delete bq;
-	delete bn;
-	delete bp1;
-	delete bp2;
-	delete bp3;
-	delete bp4;
-	delete bp5;
+//	delete br;
+//	delete bb;
+//	delete bk;
+//	delete bq;
+//	delete bn;
+//	delete bp1;
+//	delete bp2;
+//	delete bp3;
+//	delete bp4;
+//	delete bp5;
 
-	delete wr;
-	delete wb;
-	delete wk;
-	delete wq;
-	delete wn;
-	delete wp1;
-	delete wp2;
-	delete wp3;
-	delete wp4;
-	delete wp5;
+//	delete wr;
+//	delete wb;
+//	delete wk;
+//	delete wq;
+//	delete wn;
+//	delete wp1;
+//	delete wp2;
+//	delete wp3;
+//	delete wp4;
+//	delete wp5;
 
-	delete emp;
+//	delete emp;
 }
 
 void board::startingmove(int n){
@@ -2770,7 +2770,7 @@ bool board::isIsolated(pair<int,int> pawnPosition, int player){
             }
         }
         for (int j=0; j<6; j++){
-            if (TheBoard[pawnPosition.first][i].getpiecetypeint() == 1){
+            if (TheBoard[pawnPosition.first][j].getpiecetypeint() == 1){
                 rightColumnHasNoPawns = false;  //Has at least one pawn
                 break;
             }
@@ -2829,20 +2829,22 @@ vector<board> board::expand(bool isCpu) const
 	vector<board> moveListFinal;
     pair<int, int> exp;
 	board temp = *this;
-	for (int i = 0; i < 5; i++)
+	board defaul = temp;
+	for (int a = 0; a < 5; a++)
 	{
-		for (int j = 0; j < 6; j++)
+		for (int b = 0; b < 6; b++)
 		{
-            exp.first = i;
-            exp.second = j;
+			cout << "in for for loop with " << a<<b<<endl;
+            exp.first = a;
+            exp.second = b;
 			//Black is player 1 and true, white is 0 and false
 			if(this->getpiece(exp).getplayer() == playerturn)
 			{
-				temp = *this;
+				temp = defaul;
 				expansion = generatemoves(exp, move);
-				for(int k = 0; k < expansion.size(); k++)
+				for(int c = 0; c < expansion.size(); c++)
 				{
-					temp.move(exp, expansion[k], move);
+					temp.move(exp, expansion[c], move);
 //					cout << "current h' " << temp.getHeuristic() << endl;
 					temp.updateHeuristicValue();
 					moveListFinal.push_back(temp);
@@ -2851,7 +2853,7 @@ vector<board> board::expand(bool isCpu) const
 			}
 		}
 	}
-	//cout << "before return with a vector of size "<< moveListFinal.size() << endl;
+	cout << "before return with a vector of size "<< moveListFinal.size() << endl;
 	return moveListFinal;
 }
 
@@ -2865,7 +2867,7 @@ double board::evaluate(){
     pair<int,int> piecePosition;
     int mobilityWhite = 0;
     int mobilityBlack = 0;
-    cout << "eval was called" << endl;
+   // cout << "eval was called" << endl;
     for (int i=0; i<5; i++){
         for (int j=0; j<6; j++){
             piecePosition.first = i;
@@ -2886,12 +2888,12 @@ double board::evaluate(){
 			if (TheBoard[i][j].getplayer() == 0){
                 if (TheBoard[i][j].getpiecetypeint() != 0){
                     mobilityWhite += generatemoves(piecePosition,'a').size();
-                    cout << "mobilityWhite" << mobilityWhite << endl;
+                    //cout << "mobilityWhite" << mobilityWhite << endl;
                 }
 			} else {
                 if (TheBoard[i][j].getpiecetypeint() != 0){
                     mobilityBlack += generatemoves(piecePosition,'a').size();
-                    cout << "mobilityBlack" << mobilityBlack << endl;
+                    //cout << "mobilityBlack" << mobilityBlack << endl;
                 }
 			}
 
@@ -2973,13 +2975,13 @@ void board::updateHeuristicValue()
 			if (v[i].ischeckmate()){
 				updateHeuristicValue(900);
 				Hset = true;
-				i = v.size();
+				break;
 			}
 			playerturn = abs(playerturn - 1);
 			if (v[i].ischeckmate()){
 				updateHeuristicValue(900);
 				Hset = true;
-				i = v.size();
+				break;
 			}
 			playerturn = abs(playerturn - 1);
 		}
@@ -2988,12 +2990,12 @@ void board::updateHeuristicValue()
 		for (int i = 0; i < v.size(); i++){
 			if (v[i].isPromotionBoard()){
 				updateHeuristicValue(800);
-				i = v.size();
+				break;
 			}
 			playerturn = abs(playerturn - 1);
 			if (v[i].isPromotionBoard()){
 				updateHeuristicValue(800);
-				i = v.size();
+				break;
 			}
 			playerturn = abs(playerturn - 1);
 		}
@@ -3054,6 +3056,14 @@ double board::isThreaten(){
 	}
 	return curhigh;
 }
+
+    bool operator < (const board & x, const board & y)
+    {
+		cout << "hello" << endl;
+		double xb = x.getHeuristic();
+		double yb = y.getHeuristic();
+       return (xb >= yb);
+    }
 
 bool board::isPromotionBoard(){
 	pair<int, int> p;
