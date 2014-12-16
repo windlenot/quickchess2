@@ -65,17 +65,17 @@ public:
 	bool isDoubled(pair<int,int> pawnPosition, int player);
 	bool isBlocked(pair<int,int> pawnPosition, int player);
 	bool isIsolated(pair<int,int> pawnPosition, int player);
-	
+
 	void updateHeuristicValue();
 
 	void updateHeuristicValue(double newVal);
 
 	double evaluate();
-	
+
 	double isCapture();
-	
+
 	double isThreaten();
-	
+
 	bool isPromotionBoard();
 
 	//...
@@ -1092,7 +1092,7 @@ bool board::isvalid(pair <int,int> p1, pair <int,int> p2, char movetype){
 		if (!ispromotion(p2))
 			return false;
 	}
-	
+
 	if (TheBoard[p1.first][p1.second].getpiecetypeint() == 1){		//Pawn's can't just move to baseline
 		if (p2.second == 0 || p2.second == 5){						//Check if destination is a baseline
 			if (movetype == 'm' || movetype == 'M')				//Make sure it's not a move
@@ -2782,7 +2782,7 @@ vector<board> board::expand(bool isCpu) const
 					cout << "end of loop" << endl;
 					break;
 				}
-					cout << "end for 3" << endl;
+                cout << "end for 3" << endl;
 			}
 			cout << "Didn't hit if" << endl;
 		}
@@ -2801,9 +2801,10 @@ double board::evaluate(){
 
     pair<int,int> piecePosition;
     int mobility = 0;
-
+    cout << "eval was called" << endl;
+    int soma;
     for (int i=0; i<5; i++){
-        for (int j=0; j<4; j++){
+        for (int j=0; j<6; j++){
             piecePosition.first = i;
             piecePosition.second = j;
 
@@ -2822,41 +2823,48 @@ double board::evaluate(){
                 mobility += generatemoves(piecePosition,'a').size();
             }
 
-            if (playerturn == 0){
-                switch (TheBoard[i][j].getpiecetypeint()){
-                    case 1:
-                        numberOfPieces["nP"]++;
-                    case 2:
-                        numberOfPieces["nR"]++;
-                    case 3:
-                        numberOfPieces["nN"]++;
-                    case 4:
-                        numberOfPieces["nB"]++;
-                    case 5:
-                        numberOfPieces["nQ"]++;
-                    case 6:
-                        numberOfPieces["nK"]++;
+            if (TheBoard[i][j].getplayer() == playerturn){
+                cout << "piece type" <<TheBoard[i][j].getpiecetypeint() << endl;
+                if (TheBoard[i][j].getpiecetypeint() == 1){
+                    numberOfPieces["nP"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 2){
+                    numberOfPieces["nR"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 3){
+                    numberOfPieces["nN"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 4){
+                    numberOfPieces["nB"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 5){
+                    numberOfPieces["nQ"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 6){
+                    numberOfPieces["nK"]++;
                 }
             }
             else {
-                switch (TheBoard[i][j].getpiecetypeint()){
-                    case 1:
-                        numberOfPieces["nP_"]++;
-                    case 2:
-                        numberOfPieces["nR_"]++;
-                    case 3:
-                        numberOfPieces["nN_"]++;
-                    case 4:
-                        numberOfPieces["nB_"]++;
-                    case 5:
-                        numberOfPieces["nQ_"]++;
-                    case 6:
-                        numberOfPieces["nK_"]++;
+                cout << "piece type" << TheBoard.size() << endl;
+                if (TheBoard[i][j].getpiecetypeint() == 1){
+                    numberOfPieces["nP_"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 2){
+                    numberOfPieces["nR_"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 3){
+                    numberOfPieces["nN_"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 4){
+                    numberOfPieces["nB_"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 5){
+                    numberOfPieces["nQ_"]++;
+                } else if (TheBoard[i][j].getpiecetypeint() == 6){
+                    numberOfPieces["nK_"]++;
                 }
             }
         }
     }
     numberOfPieces["mobility"] = mobility;
+
+    for (int i=0; i< numberOfPieces.size(); i++){
+        cout << "blocked " << numberOfPieces["blocked"] << endl;
+        cout << "isolated " << numberOfPieces["isolated"] << endl;
+        cout << "mobility " << numberOfPieces["mobility"] << endl;
+        cout << "soma " << soma << endl;
+    }
 
     eval =  200 * (numberOfPieces["nK"] - numberOfPieces["nK_"])
             + 9 * (numberOfPieces["nQ"] - numberOfPieces["nQ_"])
@@ -2869,6 +2877,7 @@ double board::evaluate(){
                      + numberOfPieces["isolated"] - numberOfPieces["isolated_"])
             + 0.1 * (numberOfPieces["mobility"] - numberOfPieces["mobility_"]);
 
+    cout << eval << endl;
     return eval;
 }
 
@@ -2880,7 +2889,7 @@ void board::updateHeuristicValue()
 	pieces p2;
 	vector<pieces> possiblecaps;
 	cout << "in update heuristic" << endl;
-	
+
 	if (ischeckmate()){			//current player is in checkmate
 		updateHeuristicValue(1000);
 		Hset = true;
@@ -2931,7 +2940,7 @@ void board::updateHeuristicValue()
 			higher = threaten;
 		else
 			higher = possiblecaps;
-			
+
 		evaluation = evaluation + higher;
 		updateHeuristicValue(evaluation);
 	}
@@ -2997,7 +3006,7 @@ bool board::isPromotionBoard(){
 							if(isvalid(p,p2,a))
 								if(ispromotion(p2))
 									return true;
-							
+
 						}
 					}
 					else{
