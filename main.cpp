@@ -264,17 +264,16 @@ while (!gameOver){
 		
 		b.validatemove(inputpiecetype, first, second, movetype);
 		
-		curplayer = abs(curplayer - 1);
 		}
 		else if(!gameOver && curplayer == 1)				//AI STARTS
 		{
 			cout << "in ai move" << endl;
-			expansion = b.expand(true);
+			expansion = b.expand(false,false);
 			cout << "back in ai move" << endl;
 			for(int i = 0; i < expansion.size() - 1; i++)
 			{
 				cout << "			BEGIN FOR LOOP ITERATION "<< i << endl;
-				expansion2 = expansion[i].expand(false);
+				expansion2 = expansion[i].expand(false,false);
 				cout << "back again" << endl;
 				for(int j = 0; j < expansion.size(); j++)
 				{
@@ -287,10 +286,9 @@ while (!gameOver){
 				board temp;
 				temp = PriQTy.top();
 				curHeuristic = (-1.0 * temp.getHeuristic());
-				bool tr = true;
 				cout << "before expansion2 assign" << endl;
 				temp = PriQTy.top();
-				expansion2 = temp.expand(tr);
+				expansion2 = temp.expand(false,false);
 				cout << "after that" << endl;
 					
 				while(!PriQTy.empty()){
@@ -308,13 +306,9 @@ while (!gameOver){
 				cout << "after for 2" << endl;
 				curHeuristic += PriQTy.top().getHeuristic();
 				curHeuristic += expansion[i].getHeuristic();
-				cout << "before another update h'" << endl;
-	
-				expansion[i].updateHeuristicValue(curHeuristic);	
-				cout << "after update h'" << endl;
+				expansion[i].updateHeuristicValueDouble(curHeuristic);
 				while(!PriQTy.empty()){
 					PriQTy.pop();
-					cout <<"POOPPIN" << endl;
 				}
 			}
 			cout <<endl << endl << endl<< "		before for 5" << endl << endl << endl;
@@ -325,8 +319,11 @@ while (!gameOver){
 			cout << "			after for 5" << endl;
 			board bPrime(PriQTy.top());
 			b = bPrime;
-			curplayer = abs(curplayer - 1);
+			cout <<"final board h' is " << b.getHeuristic() << endl;
+			b.startingmove(0);
 		}
+		
+		curplayer = abs(curplayer - 1);
 	}
 
 	if (drawend){

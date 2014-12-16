@@ -40,7 +40,7 @@ public:
 	void startingmove(int n);
 	int getplayer() const;
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
-    vector<board> expand(bool isCpu) const;
+    vector<board> expand(bool expand, bool expand2) const;
 
 	vector<pair<int, int> > canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
@@ -56,6 +56,9 @@ public:
 
 	void rescuepiece(pair<int, int> p1, char c);
 	void promotepiece(pair<int, int> p1);
+	
+	int getexpanded() const;
+	void incrementexpanded();
 
 	//for solve class
 	bool ischeckmate();
@@ -66,9 +69,9 @@ public:
 	bool isBlocked(pair<int,int> pawnPosition, int player);
 	bool isIsolated(pair<int,int> pawnPosition, int player);
 
-	void updateHeuristicValue();
+	void updateHeuristicValue(bool expands, bool expands2);
 
-	void updateHeuristicValue(double newVal);
+	void updateHeuristicValueDouble(double newVal);
 
 	double evaluate();
 
@@ -89,6 +92,7 @@ private:
 	int playerturn;
 	int moveswithoutcapture;
 	double heuristicValue;
+	int expanded;
 
 	knight * bn;
 	pieces bnp;
@@ -168,6 +172,7 @@ board::board(){
 	heuristicValue = 0;
 	enemiescaptured.resize(0);
 	pieceslost.resize(0);
+	expanded = 0;
 
 	moveswithoutcapture = 0;
 
@@ -332,6 +337,7 @@ board::board(const board& other)
     moveswithoutcapture = other.getMovesWithoutCapture();
 	playerturn = other.getplayer();
 	heuristicValue = other.getHeuristic();
+	expanded = other.getexpanded();
 
 	pieces addpiece;
 	pieces curpiece;
@@ -2049,6 +2055,10 @@ bool board::ischeckmate(){				//assume we start in black's turn, seeing if black
 	int localx;
 	int localy;
 	char a = 'a';
+	
+	if (!ischeck()){
+		return false;
+	}
 
 	if (playerturn == 1){
 		localx = bkp.getx();
@@ -2822,7 +2832,7 @@ void board::promotepiece(pair<int, int> p1){
 
 //
 //Expands the board one moves
-vector<board> board::expand(bool isCpu) const
+vector<board> board::expand(bool expands, bool expands2) const
 {
     char move = 'a';
 	vector<pair <int, int> > expansion;
@@ -2830,6 +2840,7 @@ vector<board> board::expand(bool isCpu) const
     pair<int, int> exp;
 	board temp = *this;
 	board defaul = temp;
+	cout << "getexpand is " << temp.getexpanded() << endl;
 	for (int a = 0; a < 5; a++)
 	{
 		for (int b = 0; b < 6; b++)
@@ -2845,9 +2856,10 @@ vector<board> board::expand(bool isCpu) const
 				for(int c = 0; c < expansion.size(); c++)
 				{
 					temp.move(exp, expansion[c], move);
-//					cout << "current h' " << temp.getHeuristic() << endl;
-					temp.updateHeuristicValue();
-					moveListFinal.push_back(temp);
+					cout << "current h' " << temp.getHeuristic() << endl;
+					temp.updateHeuristicValue(expands, expands2);
+					if (!temp.ischeck())
+						moveListFinal.push_back(temp);
 				}
                 cout << "end for 3" << endl;
 			}
@@ -2951,71 +2963,76 @@ double board::evaluate(){
     return eval;
 }
 
-void board::updateHeuristicValue()
+void board::updateHeuristicValue(bool expands, bool expands2)
 {
 	vector<board> v;
 	bool Hset = false;
 	pieces p1;
 	pieces p2;
 	vector<pieces> possiblecaps;
+	pair<int, int> temp;
 
-	if (ischeckmate()){			//current player is in checkmate
-		updateHeuristicValue(1000);
-		Hset = true;
+	if (ischeck()){
+		if (ischeckmate()){			//current player is in checkmate
+			display();
+			cout << "			" << playerturn << " is in checkmate" << endl;
+			temp = checkmaker();
+			if (playerturn == 0){
+				cout << wkp.getx() << ' ' << wkp.gety() << "can be cap'd by " << temp.first << ' ' << temp.second << endl;
+			}
+			else{
+				
+				cout << bkp.getx() << ' ' << bkp.gety() << "can be cap'd by " << temp.first << ' ' << temp.second << endl;
+			}
+			updateHeuristicValueDouble(1000);
+			Hset = true;
+		}
 	}
-	playerturn = abs(playerturn - 1);
-	if (ischeckmate()){
-		updateHeuristicValue(1000);
-		Hset = true;
-	}
-	playerturn = abs(playerturn - 1);
 	if (!Hset){			//can be put into checkmate
-		v = expand(true);
-		for (int i = 0; i < v.size(); i++){
-			if (v[i].ischeckmate()){
-				updateHeuristicValue(900);
-				Hset = true;
-				break;
+		if (!expands){
+			cout << "			in 2nd check" << endl;
+			expands = true;
+			v = expand(expands, expands2);
+			incrementexpanded();
+			for (int i = 0; i < v.size(); i++){
+				if (v[i].ischeckmate()){
+					updateHeuristicValueDouble(900);
+					Hset = true;
+					break;
+				}
 			}
-			playerturn = abs(playerturn - 1);
-			if (v[i].ischeckmate()){
-				updateHeuristicValue(900);
-				Hset = true;
-				break;
-			}
-			playerturn = abs(playerturn - 1);
 		}
 	}
-	else if(!Hset){	//prevent promotion
-		for (int i = 0; i < v.size(); i++){
-			if (v[i].isPromotionBoard()){
-				updateHeuristicValue(800);
-				break;
+	if(!Hset){	//prevent promotion
+		if (!expands2){
+			expands2 = true;
+			v = expand(expands, expands2);
+			for (int i = 0; i < v.size(); i++){
+				if (v[i].isPromotionBoard()){
+					Hset = true;
+					updateHeuristicValueDouble(800);
+					break;
+				}
 			}
-			playerturn = abs(playerturn - 1);
-			if (v[i].isPromotionBoard()){
-				updateHeuristicValue(800);
-				break;
-			}
-			playerturn = abs(playerturn - 1);
 		}
 	}
-	else{
+	if (!Hset){
+		cout << "					end of EVAL" << endl;
 		double evaluation = evaluate();
 		double threaten = isThreaten();
-		double possiblecaps = isCapture();
+		double possiblecapsdouble = isCapture();
 		double higher;
-		if (threaten > possiblecaps)
+		if (threaten > possiblecapsdouble)
 			higher = threaten;
 		else
-			higher = possiblecaps;
+			higher = possiblecapsdouble;
 
 		evaluation = evaluation + higher;
-		updateHeuristicValue(evaluation);
+		updateHeuristicValueDouble(evaluation);
 	}
 }
 
-void board::updateHeuristicValue(double newVal)
+void board::updateHeuristicValueDouble(double newVal)
 {
 	heuristicValue = newVal;
 }
@@ -3057,12 +3074,12 @@ double board::isThreaten(){
 	return curhigh;
 }
 
-    bool operator < (const board & x, const board & y)
+    bool operator < (const board & xo, const board & yo)
     {
 		cout << "hello" << endl;
-		double xb = x.getHeuristic();
-		double yb = y.getHeuristic();
-       return (xb >= yb);
+		double xb = xo.getHeuristic();
+		double yb = yo.getHeuristic();
+       return (xb < yb);
     }
 
 bool board::isPromotionBoard(){
@@ -3116,4 +3133,13 @@ bool board::isPromotionBoard(){
 	}
 	return false;
 }
+
+void board::incrementexpanded(){
+	expanded++;
+}
+
+int board::getexpanded() const{
+	return expanded;
+}
+
 #endif
