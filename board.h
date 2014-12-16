@@ -46,7 +46,7 @@ public:
 	pair<int,int> checkmaker();
 
 	vector<pair <int, int> > generatemoves(pair <int,int> p1, char movetype) const;
-	bool isinvector(vector<pair <int, int> > v,pair <int,int> p1);
+	bool isinvector(vector<pair <int, int> > v,pair <int,int> p1) const;
 
 	void testmove(pair<int, int> p1, pair<int, int> p2);
 
@@ -1133,14 +1133,16 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){		//Can only move up...
 					p.second = localy - 1;
 					if (movetype != 'C' && movetype != 'c')
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 				}
 				if (localx < 4){									//up left as a capture...
 					if (movetype != 'M' && movetype != 'm'){
 						if (TheBoard[localx+1][localy - 1].getplayer() == 1){
 						p.second = localy - 1;
 						p.first = localx + 1;
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 						}
 					}
 				}
@@ -1149,7 +1151,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 						if (TheBoard[localx-1][localy - 1].getplayer() == 1){
 						p.second = localy - 1;
 						p.first = localx - 1;
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 						}
 					}
 				}
@@ -1160,14 +1163,16 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy + 1].getpiecetypeint() == 0){
 					p.second = localy + 1;
 					if (movetype != 'C' && movetype != 'c')
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 				}								//Left as a capture...
 				if (localx < 4){
 					if (movetype != 'M' && movetype != 'm'){
 						if (TheBoard[localx+1][localy + 1].getplayer() == 0){
 							p.second = localy + 1;
 							p.first = localx + 1;
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1176,7 +1181,8 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 						if (TheBoard[localx-1][localy + 1].getplayer() == 0){
 							p.second = localy + 1;
 							p.first = localx - 1;
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1195,13 +1201,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx][localy - 1].getplayer() != playerturn &&TheBoard[localx][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1220,13 +1228,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1245,13 +1255,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1270,13 +1282,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1299,13 +1313,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx - 1;			//change the x one to the left
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){		//The spot is free
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);				//so push it on the list
+						if (!isinvector(v, p))
+							v.push_back(p);				//so push it on the list
 					}
 				}
 				else{				//position is not empty
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){ //and it's not friendly
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1314,13 +1330,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx + 1;		//right
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1334,13 +1352,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx - 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1349,13 +1369,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx + 1;		//right
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1369,13 +1391,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.second = localy - 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1384,13 +1408,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.second = localy + 1;		//down
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1404,13 +1430,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.second = localy - 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1420,13 +1448,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.second = localy + 1;		//down
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 				}
@@ -1447,13 +1477,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1475,13 +1507,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1503,13 +1537,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1531,13 +1567,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1557,13 +1595,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1585,13 +1625,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1613,13 +1655,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1641,13 +1685,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1668,13 +1714,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx][localy - 1].getplayer() != playerturn && TheBoard[localx][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1693,13 +1741,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1718,13 +1768,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1743,13 +1795,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			else{
 				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else{
 					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-							v.push_back(p);
+							if (!isinvector(v, p))
+								v.push_back(p);
 						}
 					}
 					end = true;
@@ -1768,12 +1822,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			p.first = localx + 1;
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 		}
@@ -1781,12 +1837,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			p.first = localx - 1;
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-				v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 		}
@@ -1795,24 +1853,28 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			p.second = localy + 1;
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			if (localx != 4){		//DOWNRIGHT
 				p.first = localx + 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 			}
@@ -1820,12 +1882,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx - 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 			}
@@ -1838,24 +1902,28 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			p.second = localy - 1;
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-					v.push_back(p);
+					if (!isinvector(v, p))
+						v.push_back(p);
 				}
 			}
 			if (localx != 4){		//UPRIGHT
 				p.first = localx + 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 			}
@@ -1863,12 +1931,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				p.first = localx - 1;
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn &&TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
-						v.push_back(p);
+						if (!isinvector(v, p))
+							v.push_back(p);
 					}
 				}
 			}
@@ -1880,7 +1950,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 
 //Checks to see if the position p1 is in the vector
 //True if it is, false if not
-bool board::isinvector(vector<pair <int, int> > v,pair <int,int> p1){
+bool board::isinvector(vector<pair <int, int> > v,pair <int,int> p1) const{
 	for (int i = 0; i < v.size(); i++){
 //		cout << "(" << v[i].first << " , " << v[i].second << ")";
 	}
