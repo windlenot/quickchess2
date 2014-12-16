@@ -539,6 +539,7 @@ int board::getplayer() const{
 
 double board::getHeuristic() const
 {
+	cout << heuristicValue << endl;
     return heuristicValue;
 }
 
@@ -2670,15 +2671,15 @@ bool board::isDoubled(pair<int,int> pawnPosition, int player){
 bool board::isBlocked(pair<int,int> pawnPosition, int player){
     bool answer = false;
     if (player == 0) { //White
-        if (pawnPosition.first > 0){
-            if (TheBoard[pawnPosition.first-1][pawnPosition.second].getpiecetypeint() != 0){
+        if (pawnPosition.second > 0){
+            if (TheBoard[pawnPosition.first][pawnPosition.second-1].getpiecetypeint() != 0){
                 return true;
             }
         }
     }
     else { //Black
-        if (pawnPosition.first < 5){
-            if (TheBoard[pawnPosition.first+1][pawnPosition.second].getpiecetypeint() != 0){
+        if (pawnPosition.second < 5){
+            if (TheBoard[pawnPosition.first][pawnPosition.second+1].getpiecetypeint() != 0){
                 return true;
             }
         }
@@ -2753,11 +2754,11 @@ void board::promotepiece(pair<int, int> p1){
 //Expands the board one moves
 vector<board> board::expand(bool isCpu) const
 {
-	cout <<"in expand" << endl;
     char move = 'a';
 	vector<pair <int, int> > expansion;
 	vector<board> moveListFinal;
     pair<int, int> exp;
+	board temp = *this;
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 6; j++)
@@ -2765,29 +2766,21 @@ vector<board> board::expand(bool isCpu) const
             exp.first = i;
             exp.second = j;
 			//Black is player 1 and true, white is 0 and false
-			if(isCpu && this->getpiece(exp).getplayer() == playerturn)
+			if(this->getpiece(exp).getplayer() == playerturn)
 			{
+				temp = *this;
 				expansion = generatemoves(exp, move);
-				cout << "expansion is " << expansion.size() << endl;
 				for(int k = 0; k < expansion.size(); k++)
 				{
-					cout <<"in for 3 with k " << k << endl;
-					board temp = *this;
-					cout << "beforemove" << endl;
 					temp.move(exp, expansion[k], move);
-					cout << "beforehueristic" << endl;
+//					cout << "current h' " << temp.getHeuristic() << endl;
 					temp.updateHeuristicValue();
-					cout << "before push" << endl;
 					moveListFinal.push_back(temp);
-					cout << "end of loop" << endl;
-					break;
 				}
-					cout << "end for 3" << endl;
 			}
-			cout << "Didn't hit if" << endl;
 		}
-		cout << "after one row" << endl;
 	}
+	//cout << "before return with a vector of size "<< moveListFinal.size() << endl;
 	return moveListFinal;
 }
 
@@ -2798,12 +2791,11 @@ vector<board> board::expand(bool isCpu) const
 double board::evaluate(){
     double eval = 0;
 
-
     pair<int,int> piecePosition;
     int mobility = 0;
 
     for (int i=0; i<5; i++){
-        for (int j=0; j<4; j++){
+        for (int j=0; j<6; j++){
             piecePosition.first = i;
             piecePosition.second = j;
 
@@ -2868,7 +2860,7 @@ double board::evaluate(){
                      + numberOfPieces["blocked"] - numberOfPieces["blocked"]
                      + numberOfPieces["isolated"] - numberOfPieces["isolated_"])
             + 0.1 * (numberOfPieces["mobility"] - numberOfPieces["mobility_"]);
-
+	//cout << "eval is " <<eval << endl;
     return eval;
 }
 
@@ -2879,7 +2871,6 @@ void board::updateHeuristicValue()
 	pieces p1;
 	pieces p2;
 	vector<pieces> possiblecaps;
-	cout << "in update heuristic" << endl;
 	
 	if (ischeckmate()){			//current player is in checkmate
 		updateHeuristicValue(1000);
@@ -2944,14 +2935,21 @@ void board::updateHeuristicValue(double newVal)
 
 
 double board::isCapture(){
+	playerturn = abs(playerturn - 1);
+	vector<pair<int, int> > v;
+	pair<int, int> p;
 	double curhigh = 0;
 	for (int i = 0; i < 5; i++){
 		for (int j = 0; j < 6; j++){
-			if (TheBoard[i][j].getplayer() != playerturn)
+			p.first = i;
+			p.second =j;
+			v = canbecapturedby(p);
+			if (v.size() != 0)
 				if (TheBoard[i][j].getpiecetypeint() > curhigh)
 					curhigh = TheBoard[i][j].getpiecetypeint();
 		}
 	}
+	playerturn = abs(playerturn - 1);
 	return curhigh;
 }
 
