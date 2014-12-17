@@ -268,16 +268,18 @@ while (!gameOver){
 		else if(!gameOver && curplayer == 1)				//AI STARTS
 		{
 			cout << "in ai move" << endl;
-			expansion = b.expand(false,false);
+			expansion = b.expand();
 			cout << "back in ai move" << endl;
-			for(int i = 0; i < expansion.size() - 1; i++)
+			for(int i = 0; i < expansion.size(); i++)
 			{
-				cout << "			BEGIN FOR LOOP ITERATION "<< i << endl;
-				expansion2 = expansion[i].expand(false,false);
+				cout << "					BEGIN FOR LOOP ITERATION "<< i << endl;
+				expansion2 = expansion[i].expand();
 				cout << "back again" << endl;
 				for(int j = 0; j < expansion.size(); j++)
 				{
-					cout << "before push" << endl;
+					cout << "before push at j "<< j << " with size " << expansion.size() << endl;
+					expansion2[j].updateHeuristicValue();
+					cout << "current h' " << expansion2[j].getHeuristic() << endl;
 					PriQTy.push(expansion2[j]);
 					cout << "after push" << endl;
 				}
@@ -288,7 +290,7 @@ while (!gameOver){
 				curHeuristic = (-1.0 * temp.getHeuristic());
 				cout << "before expansion2 assign" << endl;
 				temp = PriQTy.top();
-				expansion2 = temp.expand(false,false);
+				expansion2 = temp.expand();
 				cout << "after that" << endl;
 					
 				while(!PriQTy.empty()){
@@ -300,24 +302,29 @@ while (!gameOver){
 				cout << "before prqty 2" << endl;
 				for(int k = 0; k < expansion2.size(); k++)
 				{
-					cout << "Inside for expansion2";
+					cout << "Inside for expansion2" << endl;
+					expansion2[k].updateHeuristicValue();
+					cout << "between expansion and pushing to pq, exp2 h' is " << 	expansion2[k].getHeuristic() << endl;
 					PriQTy.push(expansion2[k]);
 				}
 				cout << "after for 2" << endl;
-				curHeuristic += PriQTy.top().getHeuristic();
-				curHeuristic += expansion[i].getHeuristic();
+				curHeuristic = curHeuristic + PriQTy.top().getHeuristic();
+				curHeuristic = curHeuristic + expansion[i].getHeuristic();
+				cout << "cur Hur is " << curHeuristic << endl;
 				expansion[i].updateHeuristicValueDouble(curHeuristic);
 				while(!PriQTy.empty()){
 					PriQTy.pop();
 				}
 			}
 			cout <<endl << endl << endl<< "		before for 5" << endl << endl << endl;
-			for(int l = 0; l < expansion.size(); l++)
+			board bPrime;
+			bPrime = expansion[0];
+			for(int l = 1; l < expansion.size(); l++)
 			{
-				PriQTy.push(expansion[l]);
+				if (expansion[l].getHeuristic() > bPrime.getHeuristic())
+					bPrime = expansion[l];
 			}
 			cout << "			after for 5" << endl;
-			board bPrime(PriQTy.top());
 			b = bPrime;
 			cout <<"final board h' is " << b.getHeuristic() << endl;
 			b.startingmove(0);

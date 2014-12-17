@@ -4,6 +4,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <exception>
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -35,12 +36,12 @@ public:
         vector<pieces> getPiecesLost() const;
         int getMovesWithoutCapture() const;
         pair<int, int> getPieceFromAnywhere(string goal) const;
-	void display();
+	void display() const;
 	bool isempty(pair<int, int> d);
 	void startingmove(int n);
 	int getplayer() const;
 	bool isvalid(pair <int,int> p1, pair <int,int> p2, char movetype);
-    vector<board> expand(bool expand, bool expand2) const;
+    vector<board> expand() const;
 
 	vector<pair<int, int> > canbecapturedby(pair<int, int> p);
 	pair<int,int> checkmaker();
@@ -69,7 +70,7 @@ public:
 	bool isBlocked(pair<int,int> pawnPosition, int player);
 	bool isIsolated(pair<int,int> pawnPosition, int player);
 
-	void updateHeuristicValue(bool expands, bool expands2);
+	void updateHeuristicValue();
 
 	void updateHeuristicValueDouble(double newVal);
 
@@ -344,7 +345,7 @@ board::board(const board& other)
 	emp = new empty;
 	emp->setplayer(2);
 	empp.set(emp);
-	pair <int, int> p;
+	pair <int, int> p;	
 
 	for (int i = 0; i < 5; i++){
 		for (int j = 0; j < 6; j++){
@@ -545,7 +546,6 @@ int board::getplayer() const{
 
 double board::getHeuristic() const
 {
-	cout << heuristicValue << endl;
     return heuristicValue;
 }
 
@@ -1037,7 +1037,7 @@ pair<int, int> board::getPieceFromAnywhere(string goal) const
 }
 
 //print out the board
-void board::display(){
+void board::display() const{
 	cout << "A  B  C  D  E "<< endl;
 	int num = 6;
 	for (int j = 0; j < 6; j++){
@@ -1132,6 +1132,15 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 	int localy = p1.second;
 	pair<int, int> p(localx, localy);
 	bool end = false;
+	pair<int, int> kingspot;
+	if (playerturn == 0){
+		kingspot.first = bkp.getx();
+		kingspot.second = bkp.gety();
+	}
+	else{
+		kingspot.first = wkp.getx();
+		kingspot.second = wkp.gety();
+	}
 
 	if (TheBoard[localx][localy].getpiecetypeint() == 1){	//PAWN
 		if (playerturn == 0){
@@ -1140,6 +1149,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					p.second = localy - 1;
 					if (movetype != 'C' && movetype != 'c')
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 				}
 				if (localx < 4){									//up left as a capture...
@@ -1148,6 +1158,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 						p.second = localy - 1;
 						p.first = localx + 1;
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 						}
 					}
@@ -1158,6 +1169,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 						p.second = localy - 1;
 						p.first = localx - 1;
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 						}
 					}
@@ -1170,6 +1182,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					p.second = localy + 1;
 					if (movetype != 'C' && movetype != 'c')
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 				}								//Left as a capture...
 				if (localx < 4){
@@ -1178,6 +1191,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 							p.second = localy + 1;
 							p.first = localx + 1;
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1188,6 +1202,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 							p.second = localy + 1;
 							p.first = localx - 1;
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1208,6 +1223,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1215,6 +1231,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx][localy - 1].getplayer() != playerturn &&TheBoard[localx][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1235,6 +1252,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1242,6 +1260,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1262,6 +1281,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1269,6 +1289,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1289,6 +1310,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1296,6 +1318,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1320,6 +1343,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){		//The spot is free
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);				//so push it on the list
 					}
 				}
@@ -1327,6 +1351,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){ //and it's not friendly
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1337,6 +1362,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1344,6 +1370,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1359,6 +1386,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1366,6 +1394,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1376,6 +1405,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1383,6 +1413,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1398,6 +1429,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1405,6 +1437,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1415,6 +1448,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1422,6 +1456,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1437,6 +1472,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1444,6 +1480,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1455,6 +1492,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1462,6 +1500,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1484,6 +1523,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1491,6 +1531,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1514,6 +1555,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1521,6 +1563,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1544,6 +1587,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1551,6 +1595,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1574,6 +1619,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1581,6 +1627,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1602,6 +1649,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1609,6 +1657,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy - 1].getplayer() != playerturn && TheBoard[localx - 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1632,6 +1681,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1639,6 +1689,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy+1].getplayer()!= playerturn && TheBoard[localx - 1][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1662,6 +1713,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1669,6 +1721,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy - 1].getplayer() != playerturn && TheBoard[localx + 1][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1692,6 +1745,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy + 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1699,6 +1753,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy + 1].getplayer() != playerturn && TheBoard[localx + 1][localy + 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1721,6 +1776,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy - 1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1728,6 +1784,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx][localy - 1].getplayer() != playerturn && TheBoard[localx][localy - 1].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1748,6 +1805,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx][localy+1].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1755,6 +1813,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx][localy+1].getplayer()!= playerturn && TheBoard[localx][localy+1].getplayer()!= 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1775,6 +1834,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx - 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1782,6 +1842,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx - 1][localy].getplayer() != playerturn && TheBoard[localx - 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1802,6 +1863,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[localx + 1][localy].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1809,6 +1871,7 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 					if (TheBoard[localx + 1][localy].getplayer() != playerturn && TheBoard[localx + 1][localy].getplayer() != 2){
 						if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 							if (!isinvector(v, p))
+							if (p != kingspot)
 								v.push_back(p);
 						}
 					}
@@ -1829,12 +1892,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
@@ -1844,12 +1909,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
@@ -1860,12 +1927,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
@@ -1874,12 +1943,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1889,12 +1960,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1909,12 +1982,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 			if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 				if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
 			else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 				if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 					if (!isinvector(v, p))
+							if (p != kingspot)
 						v.push_back(p);
 				}
 			}
@@ -1923,12 +1998,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn && TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1938,12 +2015,14 @@ vector<pair<int, int> > board::generatemoves(pair<int, int> p1, char movetype) c
 				if (TheBoard[p.first][p.second].getpiecetypeint() == 0){
 					if (movetype == 'M' || movetype == 'm' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
 				else if (TheBoard[p.first][p.second].getplayer() != playerturn &&TheBoard[p.first][p.second].getplayer() != 2){
 					if (movetype == 'C' || movetype == 'c' || movetype == 'A' || movetype == 'a'){
 						if (!isinvector(v, p))
+							if (p != kingspot)
 							v.push_back(p);
 					}
 				}
@@ -1972,7 +2051,7 @@ bool board::ischeck(){
 	playerturn = abs(playerturn - 1);		//change to opposing team so moves will be valid
 	int localx;
 	int localy;
-
+	cout << "incheck" << endl;
 	if (playerturn == 0){				//set local x and y to original player's king
 		localx = bkp.getx();
 		localy = bkp.gety();
@@ -2832,20 +2911,20 @@ void board::promotepiece(pair<int, int> p1){
 
 //
 //Expands the board one moves
-vector<board> board::expand(bool expands, bool expands2) const
+vector<board> board::expand() const
 {
     char move = 'a';
 	vector<pair <int, int> > expansion;
 	vector<board> moveListFinal;
+	moveListFinal.resize(0);
     pair<int, int> exp;
 	board temp = *this;
 	board defaul = temp;
-	cout << "getexpand is " << temp.getexpanded() << endl;
 	for (int a = 0; a < 5; a++)
 	{
 		for (int b = 0; b < 6; b++)
 		{
-			cout << "in for for loop with " << a<<b<<endl;
+			//cout << "in for for loop with " << a<<b<<endl;
             exp.first = a;
             exp.second = b;
 			//Black is player 1 and true, white is 0 and false
@@ -2855,13 +2934,16 @@ vector<board> board::expand(bool expands, bool expands2) const
 				expansion = generatemoves(exp, move);
 				for(int c = 0; c < expansion.size(); c++)
 				{
+					cout << exp.first << exp.second << " to " << expansion[c].first << expansion[c].second << endl;
 					temp.move(exp, expansion[c], move);
-					cout << "current h' " << temp.getHeuristic() << endl;
-					temp.updateHeuristicValue(expands, expands2);
-					if (!temp.ischeck())
+					temp.display();
+					cout << "before is check" << endl;
+					if (!temp.ischeck()){
+						cout << "after is check" << endl;
 						moveListFinal.push_back(temp);
+					}
 				}
-                cout << "end for 3" << endl;
+              //  cout << "end for 3" << endl;
 			}
 		}
 	}
@@ -2963,56 +3045,45 @@ double board::evaluate(){
     return eval;
 }
 
-void board::updateHeuristicValue(bool expands, bool expands2)
+void board::updateHeuristicValue()
 {
 	vector<board> v;
 	bool Hset = false;
 	pieces p1;
 	pieces p2;
 	vector<pieces> possiblecaps;
-	pair<int, int> temp;
-
+	possiblecaps.resize(0);
+	cout << "in update" << endl;
 	if (ischeck()){
+		cout << "is incheck " << endl;
 		if (ischeckmate()){			//current player is in checkmate
-			display();
-			cout << "			" << playerturn << " is in checkmate" << endl;
-			temp = checkmaker();
 			if (playerturn == 0){
-				cout << wkp.getx() << ' ' << wkp.gety() << "can be cap'd by " << temp.first << ' ' << temp.second << endl;
-			}
-			else{
-				
-				cout << bkp.getx() << ' ' << bkp.gety() << "can be cap'd by " << temp.first << ' ' << temp.second << endl;
-			}
 			updateHeuristicValueDouble(1000);
 			Hset = true;
+			}
 		}
 	}
 	if (!Hset){			//can be put into checkmate
-		if (!expands){
-			cout << "			in 2nd check" << endl;
-			expands = true;
-			v = expand(expands, expands2);
-			incrementexpanded();
-			for (int i = 0; i < v.size(); i++){
-				if (v[i].ischeckmate()){
-					updateHeuristicValueDouble(900);
-					Hset = true;
-					break;
-				}
+		cout << "			in 2nd check" << endl;
+		v = expand();
+		cout << "boefr 2 chcl" << endl;
+		for (int i = 0; i < v.size(); i++){
+			if (v[i].ischeckmate()){
+				updateHeuristicValueDouble(900);
+				Hset = true;
 			}
 		}
+		cout << "	after 2nd check for loop" << endl;
 	}
+	cout << "	after 2nd check" << endl;
 	if(!Hset){	//prevent promotion
-		if (!expands2){
-			expands2 = true;
-			v = expand(expands, expands2);
-			for (int i = 0; i < v.size(); i++){
-				if (v[i].isPromotionBoard()){
-					Hset = true;
-					updateHeuristicValueDouble(800);
-					break;
-				}
+		cout << "				in 3rd check" << endl;
+		v = expand();
+		for (int i = 0; i < v.size(); i++){
+			if (v[i].isPromotionBoard()){
+				Hset = true;
+				updateHeuristicValueDouble(800);
+				break;
 			}
 		}
 	}
@@ -3020,7 +3091,7 @@ void board::updateHeuristicValue(bool expands, bool expands2)
 		cout << "					end of EVAL" << endl;
 		double evaluation = evaluate();
 		double threaten = isThreaten();
-		double possiblecapsdouble = isCapture();
+		double possiblecapsdouble = isCapture() * .5;
 		double higher;
 		if (threaten > possiblecapsdouble)
 			higher = threaten;
@@ -3076,10 +3147,9 @@ double board::isThreaten(){
 
     bool operator < (const board & xo, const board & yo)
     {
-		cout << "hello" << endl;
 		double xb = xo.getHeuristic();
 		double yb = yo.getHeuristic();
-       return (xb < yb);
+       return (xb <= yb);
     }
 
 bool board::isPromotionBoard(){
