@@ -10,21 +10,21 @@ public:
 	pieces();
 	pieces(piecesbody * piecetype);
 	~pieces();
-	
+
 	void move(int newx, int newy);
-	
+
 	void set(piecesbody * piecetype);
-	
+
 	int getx();
 	int gety();
 	int getplayer();
 	void setplayer(int n);
 	void setx(int newx);
 	void sety(int newy);
-	
+
 	int getpiecetypeint();
 	void setpiecetypeint(int n);
-	
+
 private:
 	piecesbody* p;
 };
@@ -40,8 +40,10 @@ pieces::pieces(piecesbody * piecetype){
 pieces::~pieces(){
 	p = NULL;
 }
-	
-	
+
+/**
+ * Move the piece to a new position
+ */
 void pieces::move(int newx, int newy){
 	p->move(newx, newy);
 }
@@ -73,7 +75,7 @@ void pieces::setx(int newx){
 void pieces::sety(int newy){
 	p->sety(newy);
 }
-	
+
 int pieces::getpiecetypeint(){
 	return p->getpiecetypeint();
 }

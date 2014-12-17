@@ -8,19 +8,19 @@ class piecesbody{
 public:
 	piecesbody();
 	~piecesbody();
-	
+
 	virtual void move(int newx, int newy) = 0;
-	
+
 	int getx();
 	int gety();
 	int getplayer();
 	void setplayer(int n);
 	void setx(int newx);
 	void sety(int newy);
-	
+
 	int getpiecetypeint();
 	void setpiecetypeint(int n);
-	
+
 private:
 	int x;
 	int y;
@@ -32,11 +32,14 @@ piecesbody::piecesbody(){
 }
 
 piecesbody::~piecesbody(){
-	
+
 }
 
+/**
+ * Move the piece to a new position
+ */
 void move(int newx, int newy){
-	
+
 }
 
 int piecesbody::getx(){

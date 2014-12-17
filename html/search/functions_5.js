@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['incrementexpanded',['incrementexpanded',['../classboard.html#a2fd890d54ff12efcf3606ff57e44bdbc',1,'board']]],
+  ['isblocked',['isBlocked',['../classboard.html#a9566aa9081378d3796962ca39d87d9c9',1,'board']]],
+  ['iscapture',['isCapture',['../classboard.html#a6c9456c321853ab403fd3a864148bfac',1,'board']]],
+  ['iscapturedpiece',['iscapturedpiece',['../classboard.html#aa25abcdb5683fd2e86d25c91ab99378f',1,'board']]],
+  ['ischeck',['ischeck',['../classboard.html#a25bf06e7cc5dfb5ff5b2398a332eda15',1,'board']]],
+  ['ischeckmate',['ischeckmate',['../classboard.html#a642ba3cff8d33e3bffee5260b4dc4971',1,'board']]],
+  ['isdoubled',['isDoubled',['../classboard.html#af652dc815151d16b4e7c7641f56cc956',1,'board']]],
+  ['isdraw',['isdraw',['../classboard.html#a116bfb2582a0b7b7c6174726be4545af',1,'board']]],
+  ['isempty',['isempty',['../classboard.html#a046d7036ce3513be660f452ea17254a2',1,'board']]],
+  ['isinvector',['isinvector',['../classboard.html#a31f2ff4b141e3c041baba677195631b8',1,'board']]],
+  ['isisolated',['isIsolated',['../classboard.html#acc4fc57c8773561ee9b3180bd18c4ceb',1,'board']]],
+  ['ispromotion',['ispromotion',['../classboard.html#a28537efaa3869ce54f83c5e5e7d506d2',1,'board']]],
+  ['ispromotionboard',['isPromotionBoard',['../classboard.html#a902c8af0080aac3549d81cbfe42d519a',1,'board']]],
+  ['isrescue',['isrescue',['../classboard.html#a67fddb7f522029b624faee307c50c6f5',1,'board']]],
+  ['isstalemate',['isstalemate',['../classboard.html#ae47316137a554d6f051ec02a6ee6e10c',1,'board']]],
+  ['isthreaten',['isThreaten',['../classboard.html#a73f6335e80a0438db5e8b22eb93f818f',1,'board']]],
+  ['isvalid',['isvalid',['../classboard.html#a894682f91ec83b819cd3075b4c331568',1,'board']]]
+];
